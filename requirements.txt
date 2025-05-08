@@ -1,0 +1,7 @@
+Flask==2.3.3
+flasgger==0.9.7.1
+scikit-learn==1.6.1
+
+libml @ git+https://github.com/remla25-team3/lib-ml
+
+.   # Import packages inside this project
