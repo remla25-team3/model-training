@@ -1,0 +1,9 @@
+Flask==2.3.3
+flasgger==0.9.7.1
+scikit-learn==1.6.1
+pandas==2.2.0
+joblib==1.4.2
+
+lib-ml-remla-team3 @ git+https://github.com/remla25-team3/lib-ml@v0.2.0
+
+.   # Import packages inside this project
