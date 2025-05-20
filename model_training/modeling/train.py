@@ -4,7 +4,7 @@ from loguru import logger
 from tqdm import tqdm
 import typer
 
-from model-training.config import MODELS_DIR, PROCESSED_DATA_DIR
+from model_training.config import MODELS_DIR, PROCESSED_DATA_DIR
 
 app = typer.Typer()
 
