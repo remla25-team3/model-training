@@ -37,7 +37,7 @@ jobs:
         continue-on-error: true
         run: |
           pylint --output-format=text model_training tests
-          pylint --output-format=json model_training tests > pylint.json
+          pylint --output-format=json:pylint.json model_training tests
           cat pylint.json
 
       - name: Summarize pylint results
