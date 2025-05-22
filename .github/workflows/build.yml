@@ -28,13 +28,32 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run flake8
+        id: flake8
         run: flake8 . --count --statistics --show-source
-        continue-on-error: false
+        continue-on-error: true
 
       - name: Run pylint
+        id: pylint
+        continue-on-error: true
         run: |
-          pylint --output-format=text model_training tests || true
-          pylint --output-format=json model_training tests > pylint.json || true
+          pylint --output-format=text model_training tests
+          pylint --output-format=json model_training tests > pylint.json
+
+      - name: Summarize pylint results
+        run: |
+          pylint_score=$(python -c "import json; with open('pylint.json') as f: data = json.load(f); print(data['score'])")
+          echo "Pylint Score: $pylint_score"
+          color=$(python -c "score=$pylint_score; print('brightgreen' if score > 9 else 'green' if score > 8 else 'yellowgreen' if score > 7 else 'yellow' if score > 6 else 'orange' if score > 5 else 'red')")
+          echo "Pylint Color: $color"
+          echo "Pylint Score: $pylint_score" >> $GITHUB_ENV
+          echo "Pylint Color: $color" >> $GITHUB_ENV
+
+      - name: Error if linting fails
+        if: steps.flake8.outcome == 'failure' || steps.pylint.outcome == 'failure'
+        run: |
+          echo "Linting failed. Please fix check the errors above."
+          exit 1
+          
 
 
   test:
