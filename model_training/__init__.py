@@ -1,2 +1,1 @@
-from . import training
-from . import data
+from model_training import config  # noqa: F401
