@@ -46,8 +46,8 @@ jobs:
           echo "Pylint Score: $pylint_score"
           color=$(python -c "score=$pylint_score; print('brightgreen' if score > 9 else 'green' if score > 8 else 'yellowgreen' if score > 7 else 'yellow' if score > 6 else 'orange' if score > 5 else 'red')")
           echo "Pylint Color: $color"
-          echo "Pylint Score: $pylint_score" >> $GITHUB_ENV
-          echo "Pylint Color: $color" >> $GITHUB_ENV
+          echo "PylintScore=$pylint_score" >> $GITHUB_ENV
+          echo "PylintColor=$color" >> $GITHUB_ENV
 
       - name: Error if linting fails
         if: steps.flake8.outcome == 'failure' || steps.pylint.outcome == 'failure'
