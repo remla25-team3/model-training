@@ -24,7 +24,7 @@ def train_model(features_path: Path, dataset_path: Path, model_path: Path):
     dataset = pd.read_csv(dataset_path, header=None)
 
     y = dataset.iloc[:, -1].values
-    x_train, x_test, y_train, y_test = train_test_split(features, y, test_size = 0.20, random_state = 0)
+    x_train, x_test, y_train, y_test = train_test_split(features, y, test_size=0.20, random_state=0)
 
     classifier = GaussianNB()
     classifier.fit(x_train, y_train)
