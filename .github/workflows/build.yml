@@ -44,10 +44,7 @@ jobs:
         run: |
           pylint_score=$(jq -r '.statistics.score' pylint.json)
           echo "Pylint Score: $pylint_score"
-          color=$(python -c "score=$pylint_score; print('brightgreen' if score > 9 else 'green' if score > 8 else 'yellowgreen' if score > 7 else 'yellow' if score > 6 else 'orange' if score > 5 else 'red')")
-          echo "Pylint Color: $color"
-          echo "PylintScore=$pylint_score" >> $GITHUB_ENV
-          echo "PylintColor=$color" >> $GITHUB_ENV
+          echo "PYLINTSCORE=$pylint_score" >> $GITHUB_ENV
 
       - name: Error if linting fails
         if: steps.flake8.outcome == 'failure' || steps.pylint.outcome == 'failure'
@@ -76,33 +73,21 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run tests with coverage
-        run: pytest --cov=model_training tests/ --cov-report=xml
+        id: coverage
+        run: pytest --cov=model_training tests/ --cov-report=json:coverage.json --cov-fail-under=80
+        continue-on-error: true
 
       - name: Calculate ML Test Score
         run: |
-          # Calculate ML Test Score based on test coverage and other metrics
-          # This is a simplified example, adjust according to your ML test criteria
-          COVERAGE=$(python -c "import xml.etree.ElementTree as ET; tree = ET.parse('coverage.xml'); root = tree.getroot(); print(float(root.attrib['line-rate']) * 100)")
-          ML_SCORE=$(python -c "coverage=$COVERAGE; print(round(min(coverage / 10, 10), 1))")
-          echo "ML_TEST_SCORE=$ML_SCORE" >> $GITHUB_ENV
-          color=$(python -c "score=$ML_SCORE; print('brightgreen' if score > 9 else 'green' if score > 8 else 'yellowgreen' if score > 7 else 'yellow' if score > 6 else 'orange' if score > 5 else 'red')")
-          echo "ML_COLOR=$color" >> $GITHUB_ENV
+          COVERAGE=$(jq -r '.totals.percent_covered' coverage.json)
           echo "COVERAGE=$COVERAGE" >> $GITHUB_ENV
-          cov_color=$(python -c "coverage=$COVERAGE; print('brightgreen' if coverage > 90 else 'green' if coverage > 80 else 'yellowgreen' if coverage > 70 else 'yellow' if coverage > 60 else 'orange' if coverage > 50 else 'red')")
-          echo "COV_COLOR=$cov_color" >> $GITHUB_ENV
-
-          echo "ML Test Score: $ML_SCORE"
           echo "Coverage: $COVERAGE"
-          echo "ML Test Score Color: $color"
-          echo "Coverage Color: $cov_color"
 
-
-      - name: Upload coverage report
-        uses: codecov/codecov-action@v3
-        with:
-          file: ./coverage.xml
-          fail_ci_if_error: false
-
+      - name: Error if coverage fails
+        if: steps.coverage.outcome == 'failure'
+        run: |
+          echo "Test coverage failed. Please check the errors above."
+          exit 1
   build:
     name: Build Package
     runs-on: ubuntu-latest
