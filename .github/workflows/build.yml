@@ -74,7 +74,9 @@ jobs:
 
       - name: Run tests with coverage
         id: coverage
-        run: pytest --cov=model_training tests/ --cov-report=json:coverage.json --cov-fail-under=80
+        run: |
+          pytest --cov=model_training tests/ --cov-report=term
+          pytest --cov=model_training tests/ --cov-report=json:coverage.json --cov-fail-under=80
         continue-on-error: true
 
       - name: Calculate ML Test Score
