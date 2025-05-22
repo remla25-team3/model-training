@@ -37,12 +37,12 @@ jobs:
         continue-on-error: true
         run: |
           pylint --output-format=text model_training tests
-          pylint --output-format=json:pylint.json model_training tests
+          pylint --output-format=json2:pylint.json model_training tests
           cat pylint.json
 
       - name: Summarize pylint results
         run: |
-          pylint_score=$(python -c "import json; with open('pylint.json') as f: data = json.load(f); print(data['score'])")
+          pylint_score=$(python -c "import json; data = json.load(open('pylint.json')); print(data['statistics']['score'])")
           echo "Pylint Score: $pylint_score"
           color=$(python -c "score=$pylint_score; print('brightgreen' if score > 9 else 'green' if score > 8 else 'yellowgreen' if score > 7 else 'yellow' if score > 6 else 'orange' if score > 5 else 'red')")
           echo "Pylint Color: $color"
