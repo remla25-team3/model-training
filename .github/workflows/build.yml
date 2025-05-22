@@ -36,23 +36,6 @@ jobs:
           pylint --output-format=text model_training tests || true
           pylint --output-format=json model_training tests > pylint.json || true
 
-      - name: Generate pylint badge
-        run: |
-          score=$(python -c "import json; f=open('pylint.json'); data=json.load(f); f.close(); print(round(data['score'], 2))")
-          echo "PYLINT_SCORE=$score" >> $GITHUB_ENV
-          color=$(python -c "score=$score; print('brightgreen' if score > 9 else 'green' if score > 8 else 'yellowgreen' if score > 7 else 'yellow' if score > 6 else 'orange' if score > 5 else 'red')")
-          echo "PYLINT_COLOR=$color" >> $GITHUB_ENV
-
-      - name: Create pylint badge
-        uses: schneegans/dynamic-badges-action@v1.6.0
-        with:
-          auth: ${{ secrets.GIST_SECRET }}
-          gistID: YOUR_GIST_ID_HERE
-          filename: pylint.json
-          label: pylint
-          message: ${{ env.PYLINT_SCORE }}
-          color: ${{ env.PYLINT_COLOR }}
-          style: flat
 
   test:
     name: Run Tests with Coverage
@@ -88,27 +71,11 @@ jobs:
           cov_color=$(python -c "coverage=$COVERAGE; print('brightgreen' if coverage > 90 else 'green' if coverage > 80 else 'yellowgreen' if coverage > 70 else 'yellow' if coverage > 60 else 'orange' if coverage > 50 else 'red')")
           echo "COV_COLOR=$cov_color" >> $GITHUB_ENV
 
-      - name: Create ML Test Score badge
-        uses: schneegans/dynamic-badges-action@v1.6.0
-        with:
-          auth: ${{ secrets.GIST_SECRET }}
-          gistID: YOUR_GIST_ID_HERE
-          filename: ml_test_score.json
-          label: ML Test Score
-          message: ${{ env.ML_TEST_SCORE }}
-          color: ${{ env.ML_COLOR }}
-          style: flat
+          echo "ML Test Score: $ML_SCORE"
+          echo "Coverage: $COVERAGE"
+          echo "ML Test Score Color: $color"
+          echo "Coverage Color: $cov_color"
 
-      - name: Create coverage badge
-        uses: schneegans/dynamic-badges-action@v1.6.0
-        with:
-          auth: ${{ secrets.GIST_SECRET }}
-          gistID: YOUR_GIST_ID_HERE
-          filename: coverage.json
-          label: coverage
-          message: ${{ env.COVERAGE }}%
-          color: ${{ env.COV_COLOR }}
-          style: flat
 
       - name: Upload coverage report
         uses: codecov/codecov-action@v3
