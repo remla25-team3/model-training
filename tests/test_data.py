@@ -1,16 +1,3 @@
-import pandas as pd
-import pytest
-
-
-DATA_PATH = ""
-SEED = 42
-
-
-@pytest.fixture
-def df():
-    df = pd.read_csv(DATA_PATH)
-    yield df
-
 
 def test_no_duplicates(df):
     """
