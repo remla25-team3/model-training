@@ -17,4 +17,6 @@ scikit-learn==1.6.1
 pandas==2.2.0
 joblib==1.4.2
 
+dvc[gdrive]
+
 lib-ml-remla-team3 @ git+https://github.com/remla25-team3/lib-ml@v0.2.0
