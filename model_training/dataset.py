@@ -18,8 +18,7 @@ def download_dataset(save_dir) -> any:
     :return: Object of the dataset converted from CSV
     """
     dataset = pd.read_csv(
-        'https://raw.githubusercontent.com/proksch/restaurant-sentiment/refs/heads/main' +
-        '/a1_RestaurantReviews_HistoricDump.tsv',
+        'https://raw.githubusercontent.com/proksch/restaurant-sentiment/refs/heads/main' + '/a1_RestaurantReviews_HistoricDump.tsv',
         sep='\t'
     )
 
@@ -38,7 +37,7 @@ def preprocess_dataset(dataset) -> list[str]:
     if len(dataset) == 0 or dataset.shape[0] == 0:
         return []
 
-    corpus=[]
+    corpus = []
 
     for i in range(0, dataset.shape[0]):
         review = preprocess_text(dataset['Review'][i])  # Apply lib-ml

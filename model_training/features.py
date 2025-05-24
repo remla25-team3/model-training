@@ -26,7 +26,7 @@ def main(
 
     corpus = pd.read_csv(input_path, header=None)[0]
 
-    cv = CountVectorizer(max_features = 1420)
+    cv = CountVectorizer(max_features=1420)
     x = cv.fit_transform(corpus).toarray()
 
     # Export BoW dictionary to later use in prediction
