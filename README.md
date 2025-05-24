@@ -19,6 +19,52 @@ To use the trained model in another service (i.e. `model-service`), download it 
 
 https://github.com/remla25-team3/model-training/tree/main/model_training/data/sentiment_model.pkl
 
+## Running the ML Pipeline (with DVC)
+
+This project uses [DVC](https://dvc.org) to define and manage the ML pipeline, including:
+
+- Data download and preprocessing
+- Feature extraction
+- Model training and evaluation
+
+> **Remote storage is not configured at the moment.**  
+> Integration with Google Drive was attempted but encountered known [issues](https://dvc.org/doc/user-guide/data-management/remote-storage/google-drive) .  
+> For now, **DVC stores all outputs locally**.
+
+### Prerequisites
+
+Install Python dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+### Running the full pipeline
+
+To run all stages:
+
+```bash
+dvc init
+dvc repro
+```
+
+This command will:
+- Download and preprocess the dataset
+- Generate bag-of-words features
+- Train the sentiment analysis model
+- Evaluate the model 
+
+Future features:
+- Produce metrics
+- Generate plots for performance visualization
+
+You may, at this stage, encounter this issue:
+```bash
+ERROR: failed to reproduce 'featurize':  output 'models/bow_sentiment_model.pkl' is already tracked by SCM (e.g. Git)
+```
+
+This is due to the fact that we did not set up a remote storage for DVC yet. Follow the instructions in the terminal to solve it.
+
 ## Project Organization
 
 ```
