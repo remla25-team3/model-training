@@ -10,10 +10,10 @@ from pathlib import Path
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
-
+from sklearn.metrics import confusion_matrix, accuracy_score
+import joblib
 
 app = typer.Typer()
-
 
 def train_model(features_path: Path, dataset_path: Path, model_path: Path):
     """
@@ -36,6 +36,14 @@ def train_model(features_path: Path, dataset_path: Path, model_path: Path):
     classifier.fit(X_train, y_train)
     joblib.dump(classifier, model_path)
 
+    y_pred = classifier.predict(x_test)
+
+    # cm = confusion_matrix(y_test, y_pred)
+    # print(cm)
+
+    acc = accuracy_score(y_test, y_pred)
+    return acc
+
 
 @app.command()
 def main(
@@ -47,9 +55,10 @@ def main(
     Trains the sentiment model and stores the model in `models`.
     """
     logger.info("Training sentiment model...")
-    train_model(features_path, dataset_path, model_path)
-    logger.success("Modeling training complete.")
 
+    accuracy = train_model(features_path, dataset_path, model_path)
+
+    logger.success(f"Modeling training complete. Accuracy: {accuracy:.4f}")
 
 if __name__ == "__main__":
     app()

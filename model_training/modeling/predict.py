@@ -1,6 +1,5 @@
 import joblib
 import pandas as pd
-
 from config import MODELS_DIR, PROCESSED_DATA_DIR
 from lib_ml.preprocessing import preprocess
 
