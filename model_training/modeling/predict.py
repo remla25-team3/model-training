@@ -1,28 +1,46 @@
 import joblib
 import pandas as pd
-from model_training.config import MODELS_DIR
-from lib_ml.preprocessing import preprocess_text
+from config import MODELS_DIR, PROCESSED_DATA_DIR
+from lib_ml.preprocessing import preprocess
+
 
 class SentimentPredictor:
 
-    def __init__(self):
+    def __init__(self, model_path, features_path):
+        self.model = joblib.load(MODELS_DIR / model_path)
+        self.vectorizer = joblib.load(PROCESSED_DATA_DIR / features_path)
 
-        self.model = joblib.load(MODELS_DIR / "sentiment_model.pkl")
-        self.vectorizer = joblib.load(MODELS_DIR / "bow_sentiment_model.pkl")
-
-    #simple function to predict sentiment of a given text
-    def predict(self, text: str) -> str:
-
-        cleaned = preprocess_text(text)
+    def predict(self, df: pd.DataFrame) -> float:
+        cleaned_texts = preprocess(df)
+        
+        if isinstance(cleaned_texts, list) and len(cleaned_texts) >= 1:
+            cleaned = cleaned_texts[0]
+        else:
+            cleaned = cleaned_texts
+            
         features = self.vectorizer.transform([cleaned]).toarray()
-        prediction = self.model.predict(features)[0]
-        return "Positive" if prediction == 1 else "Negative"
+        probabilities = self.model.predict_proba(features)[0]
+
+        return probabilities[1]
+
 
 if __name__ == "__main__":
+    predictor = SentimentPredictor(
+        model_path="svc_sentiment_classifier", 
+        features_path="csv_sentiment_model.pkl"
+    )
 
-    predictor = SentimentPredictor()
-    #simple test case
-    sample = "The food was awful and I hated the experience."
-
-    print(f"Review: {sample}")
-    print(f"Predicted Sentiment: {predictor.predict(sample)}")
+    all_reviews = pd.DataFrame({
+        'Review': [
+            "The food was great and I loved the service.",
+            "I will never come back here again, it was terrible!",
+            "An average experience, nothing special but not bad either."
+        ]
+    })
+    
+    for i, row in all_reviews.iterrows():
+        single_review = pd.DataFrame({'Review': [row['Review']]})
+        sentiment = predictor.predict(single_review)
+        print(f"Review: {row['Review']}")
+        print(f"Positive probability: {sentiment:.4f}")
+        print("-" * 50)

@@ -2,9 +2,10 @@ import joblib
 import pandas as pd
 import pytest
 
+from modeling.predict import SentimentPredictor
+
 
 DATA_PATH = ""
-TRAINED_MODEL_PATH = ""
 SEED = 42
 
 
@@ -16,5 +17,8 @@ def df():
 
 @pytest.fixture()
 def trained_model():
-    trained_model = joblib.load(TRAINED_MODEL_PATH)
+    trained_model = SentimentPredictor(
+        model_path="svc_sentiment_classifier", 
+        features_path="csv_sentiment_model.pkl"
+    )
     yield trained_model

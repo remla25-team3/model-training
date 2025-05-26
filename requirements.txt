@@ -9,14 +9,12 @@ pytest-cov==4.1.0
 python-dotenv==1.0.0
 tqdm==4.66.3
 typer==0.7.0
--e .
-
 Flask==2.3.3
 flasgger==0.9.7.1
 scikit-learn==1.6.1
 pandas==2.2.0
 joblib==1.4.2
-
 dvc[gdrive]
+lib-ml-remla-team3 @ git+https://github.com/remla25-team3/lib-ml@v0.3.1
 
-lib-ml-remla-team3 @ git+https://github.com/remla25-team3/lib-ml@v0.2.0
+-e .
