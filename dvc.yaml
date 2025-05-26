@@ -1,0 +1,26 @@
+stages:
+  prepare:
+    cmd: python -m model_training.dataset 
+    deps:
+      - model_training/dataset.py
+    outs:
+      - data/external/a1_RestaurantReviews_HistoricDump.tsv
+      - data/interim/data_interim.csv
+
+  featurize:
+    cmd: python -m model_training.features
+    deps:
+      - model_training/features.py
+      - data/interim/data_interim.csv
+    outs:
+      - data/processed/features.csv
+      - models/bow_sentiment_model.pkl
+
+  train:
+    cmd: python -m model_training.modeling.train
+    deps:
+      - model_training/modeling/train.py
+      - data/processed/features.csv
+      - data/interim/data_interim.csv
+    outs:
+      - models/sentiment_model.pkl

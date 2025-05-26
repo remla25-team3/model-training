@@ -6,6 +6,7 @@ import typer
 import pandas as pd
 from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix, accuracy_score
 import joblib
 
 from model_training.config import MODELS_DIR, PROCESSED_DATA_DIR, INTERIM_DATA_DIR
@@ -31,6 +32,14 @@ def train_model(features_path: Path, dataset_path: Path, model_path: Path):
 
     joblib.dump(classifier, model_path)
 
+    y_pred = classifier.predict(x_test)
+
+    # cm = confusion_matrix(y_test, y_pred)
+    # print(cm)
+
+    acc = accuracy_score(y_test, y_pred)
+    return acc
+
 
 @app.command()
 def main(
@@ -43,9 +52,9 @@ def main(
     """
     logger.info("Training sentiment model...")
 
-    train_model(features_path, dataset_path, model_path)
+    accuracy = train_model(features_path, dataset_path, model_path)
 
-    logger.success("Modeling training complete.")
+    logger.success(f"Modeling training complete. Accuracy: {accuracy:.4f}")
 
 
 if __name__ == "__main__":
