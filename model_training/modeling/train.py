@@ -1,14 +1,16 @@
-from pathlib import Path
-
-from loguru import logger
+import joblib
+import pandas as pd
+import pickle
 import typer
 
-import pandas as pd
-from sklearn.naive_bayes import GaussianNB
+from config import MODELS_DIR, PROCESSED_DATA_DIR, RAW_DATA_DIR
+from lib_ml.preprocessing import preprocess
+from loguru import logger
+from pathlib import Path
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
-import joblib
+from sklearn.svm import SVC
 
-from model_training.config import MODELS_DIR, PROCESSED_DATA_DIR, INTERIM_DATA_DIR
 
 app = typer.Typer()
 
@@ -20,31 +22,32 @@ def train_model(features_path: Path, dataset_path: Path, model_path: Path):
 
     The resulting model is stored in model_training/data/sentiment_model.pkl.
     """
-    features = pd.read_csv(features_path).to_numpy()
-    dataset = pd.read_csv(dataset_path, header=None)
+    df = pd.read_csv(dataset_path, delimiter='\t', quoting=3)
+    corpus = preprocess(df)
+    
+    cv = CountVectorizer(max_features=1420)
+    X = cv.fit_transform(corpus).toarray()
+    y = df.iloc[:, -1].values
+    pickle.dump(cv, open(features_path, "wb"))
 
-    y = dataset.iloc[:, -1].values
-    x_train, x_test, y_train, y_test = train_test_split(features, y, test_size=0.20, random_state=0)
+    X_train, _, y_train, _ = train_test_split(X, y, test_size=0.3, random_state=42)
 
-    classifier = GaussianNB()
-    classifier.fit(x_train, y_train)
-
+    classifier = SVC(probability=True)
+    classifier.fit(X_train, y_train)
     joblib.dump(classifier, model_path)
 
 
 @app.command()
 def main(
-    features_path: Path = PROCESSED_DATA_DIR / 'features.csv',
-    dataset_path: Path = INTERIM_DATA_DIR / 'data_interim.csv',
-    model_path: Path = MODELS_DIR / 'sentiment_model.pkl',
+    features_path: Path = PROCESSED_DATA_DIR / 'csv_sentiment_model.pkl',
+    dataset_path: Path = RAW_DATA_DIR / 'a1_RestaurantReviews_HistoricDump.tsv',
+    model_path: Path = MODELS_DIR / 'svc_sentiment_classifier',
 ):
     """
     Trains the sentiment model and stores the model in `models`.
     """
     logger.info("Training sentiment model...")
-
     train_model(features_path, dataset_path, model_path)
-
     logger.success("Modeling training complete.")
 
 
