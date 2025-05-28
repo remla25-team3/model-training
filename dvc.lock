@@ -5,8 +5,8 @@ stages:
     deps:
     - path: model_training/dataset.py
       hash: md5
-      md5: 05d87591e449719ce338aa93812f2b10
-      size: 1876
+      md5: 213e4af6859bbcb789eaac4becfd1138
+      size: 1889
     outs:
     - path: data/external/a1_RestaurantReviews_HistoricDump.tsv
       hash: md5
@@ -14,45 +14,45 @@ stages:
       size: 54686
     - path: data/interim/data_interim.csv
       hash: md5
-      md5: 169a2b03116d4afa5723ce78cd722833
-      size: 33032
+      md5: f5f2d141486a1fca244af16ef2ee6cca
+      size: 29798
   featurize:
     cmd: python -m model_training.features
     deps:
     - path: data/interim/data_interim.csv
       hash: md5
-      md5: 169a2b03116d4afa5723ce78cd722833
-      size: 33032
+      md5: f5f2d141486a1fca244af16ef2ee6cca
+      size: 29798
     - path: model_training/features.py
       hash: md5
-      md5: 1590f6c00a2dc093ebbc7fd230d7d0be
-      size: 1245
+      md5: 5b2c8887fd70ac76813383457ea7df42
+      size: 1254
     outs:
     - path: data/processed/features.csv
       hash: md5
-      md5: 65a223eab6bb6e247c13dd96e6910e31
-      size: 2566163
+      md5: bf6f3c01bc08dd5fb774f5561e51102c
+      size: 2562244
     - path: models/bow_sentiment_model.pkl
       hash: md5
-      md5: f777d8375447672c58256c42388ab1be
-      size: 40530
+      md5: fd778b28ebb2d9194bd2ce883720bf17
+      size: 39451
   train:
     cmd: python -m model_training.modeling.train
     deps:
     - path: data/interim/data_interim.csv
       hash: md5
-      md5: 169a2b03116d4afa5723ce78cd722833
-      size: 33032
+      md5: f5f2d141486a1fca244af16ef2ee6cca
+      size: 29798
     - path: data/processed/features.csv
       hash: md5
-      md5: 65a223eab6bb6e247c13dd96e6910e31
-      size: 2566163
+      md5: 07849afa0b97694d2f2e8b281b681f1c
+      size: 39451
     - path: model_training/modeling/train.py
       hash: md5
-      md5: ba62159936522110c2563f3f86b8289d
-      size: 1721
+      md5: 25c17f04ff4dba3bd18afe962c30dc05
+      size: 1961
     outs:
     - path: models/sentiment_model.pkl
       hash: md5
-      md5: 374cc3b4602363d76eb450e54107b35c
-      size: 16545543
+      md5: ec13e42f0573f37dd24cf4b1301135c7
+      size: 7284859

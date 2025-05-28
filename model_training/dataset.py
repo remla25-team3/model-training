@@ -4,7 +4,7 @@ from loguru import logger
 import typer
 
 import pandas as pd
-from lib_ml.preprocessing import preprocess_text
+from lib_ml.preprocessing import preprocess
 
 from model_training.config import EXTERNAL_DATA_DIR, INTERIM_DATA_DIR
 
@@ -37,11 +37,11 @@ def preprocess_dataset(dataset) -> list[str]:
     if len(dataset) == 0 or dataset.shape[0] == 0:
         return []
 
-    corpus = []
+    corpus = preprocess(dataset)
 
-    for i in range(0, dataset.shape[0]):
-        review = preprocess_text(dataset['Review'][i])  # Apply lib-ml
-        corpus.append(review)
+    # for i in range(0, dataset.shape[0]):
+    #     review = preprocess(dataset['Review'][i])  # Apply lib-ml
+    #     corpus.append(review)
 
     return corpus
 

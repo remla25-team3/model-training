@@ -39,31 +39,40 @@ Install Python dependencies:
 pip install -r requirements.txt
 ```
 
-### Running the full pipeline
+### DVC Remote Access Setup
 
-To run all stages:
+This project uses a shared Google Drive folder as a DVC remote.
+In order to download (pull) or upload (push) data, you’ll need to authenticate using your Google account via OAuth.
+
+To avoid errors such as “This app is blocked,” we recommend that each user create their own Google Cloud OAuth credentials.
+
+Follow the DVC documentation guide until step 6 to create your credentials:
+[Using a Custom Google Cloud project](https://dvc.org/doc/user-guide/data-management/remote-storage/google-drive#using-a-custom-google-cloud-project-recommended)
+
+Once you've generated your client_id and client_secret, configure them locally by running:
 
 ```bash
-dvc init
+dvc remote modify gdrive_remote gdrive_client_id 'YOUR_CLIENT_ID' --local
+dvc remote modify gdrive_remote gdrive_client_secret 'YOUR_CLIENT_SECRET' --local
+```
+
+After setup, you can use the following commands to synchronize data with the remote storage:
+
+```bash
+dvc pull
+```
+
+## How to reproduce the full pipeline
+
+To execute all steps in the pipeline, use:
+```bash
 dvc repro
 ```
-
-This command will:
-- Download and preprocess the dataset
-- Generate bag-of-words features
-- Train the sentiment analysis model
-- Evaluate the model 
-
-Future features:
-- Produce metrics
-- Generate plots for performance visualization
-
-You may, at this stage, encounter this issue:
-```bash
-ERROR: failed to reproduce 'featurize':  output 'models/bow_sentiment_model.pkl' is already tracked by SCM (e.g. Git)
-```
-
-This is due to the fact that we did not set up a remote storage for DVC yet. Follow the instructions in the terminal to solve it.
+This command automatically detects changes in your code, data, or parameters, and only reruns the pipeline stages that are affected.
+Common scenarios where you’ll use this:
+- You changed model hyperparameters
+- You modified preprocessing or model code
+- You’re working on a new environment or system and need to reproduce results from scratch
 
 ## Project Organization
 
@@ -71,7 +80,7 @@ This is due to the fact that we did not set up a remote storage for DVC yet. Fol
 ├── LICENSE            <- Open-source license if one is chosen
 ├── Makefile           <- Makefile with convenience commands like `make data` or `make train`
 ├── README.md          <- The top-level README for developers using this project.
-├── data
+├── data                (managed my DVC)
 │   ├── external       <- Data from third party sources.
 │   ├── interim        <- Intermediate data that has been transformed.
 │   ├── processed      <- The final, canonical data sets for modeling.
@@ -79,7 +88,7 @@ This is due to the fact that we did not set up a remote storage for DVC yet. Fol
 │
 ├── docs               <- A default mkdocs project; see www.mkdocs.org for details
 │
-├── models             <- Trained and serialized models, model predictions, or model summaries
+├── models             <- (Managed by DVC) Trained and serialized models, model predictions, or model summaries
 │
 ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
 │                         the creator's initials, and a short `-` delimited description, e.g.
