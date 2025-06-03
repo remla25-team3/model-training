@@ -80,7 +80,7 @@ jobs:
           echo "ML_MAX=$ML_MAX" >> $GITHUB_ENV
 
   badges:
-    name: Generate Badges & Update README
+    name: Generate SVG Badges
     runs-on: ubuntu-latest
     needs: test
 
@@ -96,21 +96,51 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          sudo apt-get update && sudo apt-get install -y jq
+          pip install coverage-badge
+          sudo apt-get update && sudo apt-get install -y jq bc
 
-      - name: Generate badges and update README
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COVERAGE: ${{ env.COVERAGE }}
-          PYLINT_SCORE: ${{ env.PYLINT_SCORE }}
-          ML_SCORE: ${{ env.ML_SCORE }}
-          ML_MAX: ${{ env.ML_MAX }}
+      - name: Generate coverage badge
         run: |
-          python3 scripts/update_readme.py
+          coverage-badge -o coverage.svg -f
 
-      - name: Commit updated badges & README back to branch
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: "ci: update coverage, pylint & ML Test Score badges"
-          file_pattern: |
-            README.md
+      - name: Generate pylint badge
+        run: |
+          SCORE="${{ env.PYLINT_SCORE }}"
+          COLOR="brightgreen"
+          if (( $(echo "$SCORE < 9.0" | bc -l) )); then COLOR="yellow"; fi
+          if (( $(echo "$SCORE < 5.0" | bc -l) )); then COLOR="red"; fi
+          echo "<svg xmlns='http://www.w3.org/2000/svg' width='150' height='20'>
+          <rect width='150' height='20' fill='gray'/>
+          <rect x='70' width='80' height='20' fill='$COLOR'/>
+          <text x='10' y='14' fill='white' font-family='Verdana' font-size='12'>Pylint</text>
+          <text x='75' y='14' fill='white' font-family='Verdana' font-size='12'>$SCORE</text>
+          </svg>" > pylint.svg
+
+      - name: Generate ML Test Score badge
+        run: |
+          SCORE="${{ env.ML_SCORE }}"
+          MAX="${{ env.ML_MAX }}"
+          COLOR="brightgreen"
+          if (( $(echo "$SCORE < 5.0" | bc -l) )); then COLOR="yellow"; fi
+          if (( $(echo "$SCORE < 3.0" | bc -l) )); then COLOR="red"; fi
+          echo "<svg xmlns='http://www.w3.org/2000/svg' width='150' height='20'>
+          <rect width='150' height='20' fill='gray'/>
+          <rect x='70' width='80' height='20' fill='$COLOR'/>
+          <text x='10' y='14' fill='white' font-family='Verdana' font-size='12'>ML Test</text>
+          <text x='75' y='14' fill='white' font-family='Verdana' font-size='12'>$SCORE/$MAX</text>
+          </svg>" > ml_test_score.svg
+
+      - name: Commit SVG badges to badge-badges branch
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git fetch origin
+          git worktree add ../badge-badges badge-badges || \
+          git worktree add ../badge-badges -b badge-badges origin/badge-badges
+
+          cp coverage.svg pylint.svg ml_test_score.svg ../badge-badges/
+
+          cd ../badge-badges
+          git add coverage.svg pylint.svg ml_test_score.svg
+          git commit -m 'Update badge SVGs [skip ci]' || echo "No changes to commit"
+          git push origin badge-badges

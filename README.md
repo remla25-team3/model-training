@@ -130,13 +130,14 @@ Common scenarios where you’ll use this:
 
 ## ✅ Project Quality Metrics
 
-<!-- BADGES_START -->
-<!-- BADGES_END -->
+![Coverage](https://github.com/remla25-team7/model-training/raw/badge-badges/coverage.svg)
+![Pylint](https://github.com/remla25-team7/model-training/raw/badge-badges/pylint.svg)
+![ML Test Score](https://github.com/remla25-team7/model-training/raw/badge-badges/ml_test_score.svg)
 
 These badges are automatically updated via GitHub Actions on every push and pull request.  
 They reflect:
 
 - ✅ Test coverage percentage (`pytest-cov`)
 - ✅ Lint quality score (`pylint`)
-- ✅ ML Test Score adequacy (based on [Google's ML Test Score](https://storage.googleapis.com/pub-tools-public-publication-data/pdf/e7d8e6d43f90c9aa4e6cfd22c0868fcf16b3bd16.pdf))
+- ✅ ML Test Score adequacy (based on Google's ML Test Score)
 
