@@ -1,12 +1,13 @@
 import pytest
 import random
 import pandas as pd
-from rouge_score import rouge_scorer
-from model_training.dataset import preprocess
+import re
 def wrap(text: str) -> pd.DataFrame:
     return pd.DataFrame({"Review": [text]})
 
-def test_mr_invariance_whitespace_and_punctuation(trained_model):
+
+@pytest.mark.metamorphic
+def test_invariance_whitespace_and_punctuation(trained_model):
     """
     Metamorphic Relation: Adding or removing non-meaningful whitespace or punctuation
     should not change the model's core output (e.g., sentiment, entity extraction).
@@ -25,7 +26,9 @@ def test_mr_invariance_whitespace_and_punctuation(trained_model):
     for i in range(1, len(preds)):
         assert abs(preds[0] - preds[i]) <= 0.05, f"Predictions differ too much: {preds}"
 
-def test_mr_invariance_synonym_substitution(trained_model):
+
+@pytest.mark.metamorphic
+def test_invariance_synonym_substitution(trained_model):
     """
     Metamorphic Relation: Replacing words with synonyms that do not alter the
     overall meaning or sentiment of the sentence should result in similar output.
@@ -53,7 +56,9 @@ def test_mr_invariance_synonym_substitution(trained_model):
             f"  synonym='{synonym_variant}' ({p2:.3f})"
         )
 
-def test_mr_monotonicity_sentiment_addition(trained_model):
+
+@pytest.mark.metamorphic
+def test_monotonicity_sentiment_addition(trained_model):
     """
     Metamorphic Relation: Adding words or phrases that clearly increase/decrease
     a specific property (e.g., positivity/negativity of sentiment) should lead
@@ -70,7 +75,9 @@ def test_mr_monotonicity_sentiment_addition(trained_model):
     assert p_pos > p_base, f"Positive addition failed: {p_pos} <= {p_base}"
     assert p_neg < p_base, f"Negative addition failed: {p_neg} >= {p_base}"
 
-def test_mr_reversal_negation(trained_model):
+
+@pytest.mark.metamorphic
+def test_reversal_negation(trained_model):
     """
     Metamorphic Relation: Applying negation to a statement should reverse its
     sentiment or other relevant properties (e.g., from positive to negative, or vice-versa).
@@ -84,7 +91,9 @@ def test_mr_reversal_negation(trained_model):
     assert p_pos > 0.7, f"Expected positive sentiment: {p_pos}"
     assert p_neg < 0.3, f"Expected negated sentiment: {p_neg}"
 
-def test_mr_permutation_order_independent_features(trained_model):
+
+@pytest.mark.metamorphic
+def test_permutation_order_independent_features(trained_model):
     """
     Metamorphic Relation: If the order of certain independent elements (e.g., items in a list,
     facts in a non-sequential summary) should not affect the model's output.
@@ -99,7 +108,9 @@ def test_mr_permutation_order_independent_features(trained_model):
 
     assert abs(p_base - p_perm) <= 0.1, f"Order changed result too much: {p_base} vs {p_perm}"
 
-def test_mr_generalization_specialization(trained_model):
+
+@pytest.mark.metamorphic
+def test_generalization_specialization(trained_model):
     """
     Metamorphic Relation: A more general statement should have a consistent relation
     to a more specific statement. For instance, if a general statement is positive,
@@ -112,3 +123,50 @@ def test_mr_generalization_specialization(trained_model):
     p_specific = trained_model.predict(wrap(specific))
 
     assert p_specific >= p_general - 0.1, f"Specific case lost positivity: {p_specific} vs {p_general}"
+
+
+# mutamorphic testing with automatic inconsistency repair
+@pytest.mark.metamorphic
+def test_whitespace_invariance_with_repair(trained_model):
+    """
+    Metamorphic Relation with Repair: If a whitespace/punctuation variant produces
+    an inconsistent prediction, automatically repair the variant (by stripping
+    extraneous characters) and re-check consistency against the base prediction.
+
+    To simulate the need for repair (even though our pipeline already strips
+    ASCII punctuation), we add an em-dash (—) which is often not removed by simple
+    ASCII-only cleaning logic. This guarantees that the “broken” variant
+    will not match the base under your normal preprocess.
+    """
+
+    base = "The movie was good"
+    broken = "The m—o—vi—e  was g—o—o—d—"
+
+    p_base = trained_model.predict(wrap(base))
+    p_broken = trained_model.predict(wrap(broken))
+
+    # We expect that, because of the em-dash, the raw “broken” input will differ
+    # by more than 0.1 from the base. If it does not, we fail the test, because
+    # we wanted to force the repair path.
+    assert abs(p_base - p_broken) > 0.1, (
+        f"Expected broken variant to deviate; got base={p_base:.3f}, broken={p_broken:.3f}"
+    )
+
+    # Now run our “repair” step: strip anything that is not A-Z, a-z, 0-9 or space,
+    # and then collapse multiple spaces. This should turn “The m—o—vi—e was g—o—o—d—”
+    # into exactly “The movie was good”.
+    cleaned = re.sub(r'[^A-Za-z0-9 ]+', '', broken)      # remove em-dash
+    repaired_text = " ".join(cleaned.split())            # collapse any extra spaces
+
+    # Confirm that our repair really did match the base string exactly:
+    assert repaired_text == base, (
+        f"Repair step failed to produce the base text:\n"
+        f"  repaired_text='{repaired_text}' vs base='{base}'"
+    )
+
+    # predict on the repaired text and assert it is consistent with p_base
+    p_repaired = trained_model.predict(wrap(repaired_text))
+    assert abs(p_base - p_repaired) <= 0.05, (
+        f"Automatic repair did not restore consistency:\n"
+        f"  base={p_base:.3f}, repaired={p_repaired:.3f}"
+    )
