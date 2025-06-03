@@ -5,8 +5,8 @@ stages:
     deps:
     - path: model_training/dataset.py
       hash: md5
-      md5: 213e4af6859bbcb789eaac4becfd1138
-      size: 1889
+      md5: 7f0f668325467540c201f04ccdd591e5
+      size: 3948
     outs:
     - path: data/external/a1_RestaurantReviews_HistoricDump.tsv
       hash: md5
@@ -34,7 +34,7 @@ stages:
       size: 2562244
     - path: models/bow_sentiment_model.pkl
       hash: md5
-      md5: e6785acb650c4c0dbe4365d964f96f66
+      md5: f7aea7bed44cd80fdc91d9a83797cb70
       size: 39451
   train:
     cmd: python -m model_training.modeling.train
@@ -45,7 +45,7 @@ stages:
       size: 29798
     - path: data/processed/features.csv
       hash: md5
-      md5: bffd87df0dbb451bfae9355ca58e3e93
+      md5: db69fdcb9b915e032fefb9d98983b63c
       size: 39451
     - path: model_training/modeling/train.py
       hash: md5
@@ -54,5 +54,5 @@ stages:
     outs:
     - path: models/sentiment_model.pkl
       hash: md5
-      md5: 9b0eaced180442b2066ce8c1c919528a
+      md5: 07d437d830900a7913b4ff3f6fa3316e
       size: 7284859
