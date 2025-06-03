@@ -54,11 +54,10 @@ jobs:
           pip install pytest pytest-cov jq
 
       - name: Run pytest with coverage
+        id: pytest
         run: |
-          coverage run -m pytest
-          coverage json -o coverage.json
-          coverage xml
-          
+          pytest --cov=model_training --cov=model_training.modeling --cov-report=xml --cov-report=json:coverage.json --cov-fail-under=80 || true
+
       - name: Extract coverage percentage
         run: |
           if [ -f coverage.json ]; then

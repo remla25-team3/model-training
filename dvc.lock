@@ -45,7 +45,7 @@ stages:
       size: 29665
     - path: data/processed/features.csv
       hash: md5
-      md5: cb27f8cd772af94779248112bcfbe6bb
+      md5: bfdd205e425b7523140008cdb853ab2e
       size: 39451
     - path: model_training/modeling/train.py
       hash: md5
@@ -54,7 +54,7 @@ stages:
     outs:
     - path: models/sentiment_model.pkl
       hash: md5
-      md5: ddcc0f2e6c6f62997257f77d1232a074
+      md5: 50783564e03fde4f15bf74357b6a608f
       size: 7284859
   evaluate:
     cmd: python -m model_training.modeling.evaluate
@@ -77,10 +77,10 @@ stages:
       size: 39448
     - path: models/sentiment_model.pkl
       hash: md5
-      md5: ddcc0f2e6c6f62997257f77d1232a074
+      md5: 50783564e03fde4f15bf74357b6a608f
       size: 7284859
     outs:
     - path: output/metrics.json
       hash: md5
-      md5: 3199baa3c86165a8c411a979176cfca0
-      size: 172
+      md5: e82c4c323923a7579894bd823bfdc1e2
+      size: 173
