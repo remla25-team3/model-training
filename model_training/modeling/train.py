@@ -32,6 +32,9 @@ def train_model(features_path: Path, dataset_path: Path, model_path: Path):
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+    pd.DataFrame(X_test).to_csv(PROCESSED_DATA_DIR / "X_test.csv", index=False)
+    pd.DataFrame(y_test).to_csv(PROCESSED_DATA_DIR / "y_test.csv", index=False, header=False)
+
     classifier = SVC(probability=True)
     classifier.fit(X_train, y_train)
     joblib.dump(classifier, model_path)
