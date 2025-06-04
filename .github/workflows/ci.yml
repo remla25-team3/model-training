@@ -10,20 +10,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install test dependencies
+        run: |
+          pip install -r requirements.txt
+
       - name: DVC pull
         run: |
+          #add remote
+          dvc remote add -d dvc-remote ${{secrets.DVC_REMOTE_URL}} 
+
+          #add authentication
           dvc remote modify dvc-remote gdrive_client_id ${{secrets.DVC_CLIENT_ID}}
           dvc remote modify dvc-remote gdrive_client_secret ${{secrets.DVC_CLIENT_SECRET}}
-
-          # set auth method
           dvc remote modify dvc-remote gdrive_use_service_account false
 
           # Pull data
           dvc pull
-
-
-
-
 
   lint:
     name: Lint Code
