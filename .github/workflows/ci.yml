@@ -36,7 +36,7 @@ jobs:
           dvc remote modify gdrive_remote gdrive_client_id "$CLIENT_ID"
           dvc remote modify gdrive_remote gdrive_client_secret "$CLIENT_SECRET"
 
-          dvc pull
+          dvc pull --force
 
           dvc repro
 
