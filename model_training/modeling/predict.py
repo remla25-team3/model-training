@@ -23,24 +23,24 @@ class SentimentPredictor:
 
         return probabilities[1]
 
+# DEBUG PURPOSES
+# if __name__ == "__main__":
+#     predictor = SentimentPredictor(
+#         model_path="svc_sentiment_classifier", 
+#         features_path="csv_sentiment_model.pkl"
+#     )
 
-if __name__ == "__main__":
-    predictor = SentimentPredictor(
-        model_path="svc_sentiment_classifier", 
-        features_path="csv_sentiment_model.pkl"
-    )
-
-    all_reviews = pd.DataFrame({
-        'Review': [
-            "The food was great and I loved the service.",
-            "I will never come back here again, it was terrible!",
-            "An average experience, nothing special but not bad either."
-        ]
-    })
+#     all_reviews = pd.DataFrame({
+#         'Review': [
+#             "The food was great and I loved the service.",
+#             "I will never come back here again, it was terrible!",
+#             "An average experience, nothing special but not bad either."
+#         ]
+#     })
     
-    for i, row in all_reviews.iterrows():
-        single_review = pd.DataFrame({'Review': [row['Review']]})
-        sentiment = predictor.predict(single_review)
-        print(f"Review: {row['Review']}")
-        print(f"Positive probability: {sentiment:.4f}")
-        print("-" * 50)
+#     for i, row in all_reviews.iterrows():
+#         single_review = pd.DataFrame({'Review': [row['Review']]})
+#         sentiment = predictor.predict(single_review)
+#         print(f"Review: {row['Review']}")
+#         print(f"Positive probability: {sentiment:.4f}")
+#         print("-" * 50)

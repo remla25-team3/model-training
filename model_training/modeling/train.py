@@ -3,7 +3,7 @@ import pandas as pd
 import pickle
 import typer
 
-from config import MODELS_DIR, PROCESSED_DATA_DIR, RAW_DATA_DIR
+from config import MODELS_DIR, PROCESSED_DATA_DIR, EXTERNAL_DATA_DIR
 from lib_ml.preprocessing import preprocess
 from loguru import logger
 from pathlib import Path
@@ -30,13 +30,16 @@ def train_model(features_path: Path, dataset_path: Path, model_path: Path):
     y = df.iloc[:, -1].values
     pickle.dump(cv, open(features_path, "wb"))
 
-    X_train, _, y_train, _ = train_test_split(X, y, test_size=0.3, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    pd.DataFrame(X_test).to_csv(PROCESSED_DATA_DIR / "X_test.csv", index=False)
+    pd.DataFrame(y_test).to_csv(PROCESSED_DATA_DIR / "y_test.csv", index=False, header=False)
 
     classifier = SVC(probability=True)
     classifier.fit(X_train, y_train)
     joblib.dump(classifier, model_path)
 
-    y_pred = classifier.predict(x_test)
+    y_pred = classifier.predict(X_test)
 
     # cm = confusion_matrix(y_test, y_pred)
     # print(cm)
@@ -47,9 +50,9 @@ def train_model(features_path: Path, dataset_path: Path, model_path: Path):
 
 @app.command()
 def main(
-    features_path: Path = PROCESSED_DATA_DIR / 'csv_sentiment_model.pkl',
-    dataset_path: Path = RAW_DATA_DIR / 'a1_RestaurantReviews_HistoricDump.tsv',
-    model_path: Path = MODELS_DIR / 'svc_sentiment_classifier',
+    features_path: Path = PROCESSED_DATA_DIR / 'features.csv',
+    dataset_path: Path = EXTERNAL_DATA_DIR / 'a1_RestaurantReviews_HistoricDump.tsv',
+    model_path: Path = MODELS_DIR / 'sentiment_model.pkl',
 ):
     """
     Trains the sentiment model and stores the model in `models`.

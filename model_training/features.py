@@ -24,7 +24,7 @@ def main(
     """
     logger.info("Generating features from dataset...")
 
-    corpus = pd.read_csv(input_path, header=None)[0]
+    corpus = pd.read_csv(input_path, header=None)[0].dropna()
 
     cv = CountVectorizer(max_features=1420)
     x = cv.fit_transform(corpus).toarray()

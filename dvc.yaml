@@ -24,3 +24,14 @@ stages:
       - data/interim/data_interim.csv
     outs:
       - models/sentiment_model.pkl
+
+  evaluate:
+    cmd: python -m model_training.modeling.evaluate
+    deps:
+      - model_training/modeling/evaluate.py
+      - models/sentiment_model.pkl
+      - models/bow_sentiment_model.pkl
+      - data/processed/X_test.csv
+      - data/processed/y_test.csv
+    metrics:
+      - output/metrics.json

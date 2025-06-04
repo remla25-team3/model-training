@@ -1,5 +1,8 @@
-# Data
-data/
+# Data and models
+#data/
+tests/tmp
+tests/data/tmp
+output/
 
 # Mac OS-specific storage files
 .DS_Store
