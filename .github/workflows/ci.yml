@@ -25,13 +25,13 @@ jobs:
             
       - name: Fetch access key DVC and pull
         env:
-          CREDENTIALS: ${{ github.workspace }}/service_key.json
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/service_key.json
           SERVICE_KEY : ${{ secrets.SERVICE_KEY }} 
         run: |
 
           echo "$SERVICE_KEY" > service_key.json
           
-          dvc remote modify gdrive_remote gdrive_service_account_json_file "$CREDENTIALS"
+          dvc remote modify gdrive_remote gdrive_use_service_account true
           
           dvc pull -v
 
