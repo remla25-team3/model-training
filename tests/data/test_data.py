@@ -1,9 +1,10 @@
+from pathlib import Path
 import re
 import sys
-import pytest
-import tempfile
+
 import pandas as pd
-from pathlib import Path
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from model_training.dataset import download_dataset, preprocess_dataset
 from model_training.features import main
@@ -26,8 +27,8 @@ def download_and_preprocess():
     assert not raw_df.empty, "Downloaded dataset is empty."
 
     # Preprocess
-    corpus = preprocess_dataset(raw_df)
-    pre_df = pd.DataFrame(corpus)
+    corpus, labels = preprocess_dataset(raw_df)
+    pre_df = pd.DataFrame({'Review': corpus, 'Liked': labels})
     pre_df.to_csv(PREPROCESSED_PATH, index=False, header=False)
 
     return raw_df, pre_df

@@ -1,11 +1,14 @@
-import pytest
-import pandas as pd
-import sys
 from pathlib import Path
+import sys
+
+import pandas as pd
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from model_training.dataset import preprocess_dataset
-from model_training.config import MODELS_DIR
 import joblib
+
+from model_training.config import MODELS_DIR
+from model_training.dataset import preprocess_dataset
 
 VECTORIZER_PATH = MODELS_DIR / "bow_sentiment_model.pkl"
 MODEL_PATH = MODELS_DIR / "sentiment_model.pkl"

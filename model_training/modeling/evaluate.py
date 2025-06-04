@@ -1,22 +1,27 @@
-from pathlib import Path
+"""Evaluate sentiment model and output performance metrics as JSON."""
+
 import json
+from pathlib import Path
 
-import pandas as pd
 import joblib
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
-
-from model_training.config import INTERIM_DATA_DIR, PROCESSED_DATA_DIR, MODELS_DIR
 from loguru import logger
-
+import pandas as pd
+from sklearn.metrics import (
+    accuracy_score,
+    f1_score,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+)
 import typer
+
+from model_training.config import MODELS_DIR, PROCESSED_DATA_DIR
 
 app = typer.Typer()
 
 
 @app.command()
 def main(
-    test_data_path: Path = INTERIM_DATA_DIR / 'data_interim.csv',
-    vectorizer_path: Path = MODELS_DIR / 'bow_sentiment_model.pkl',
     model_path: Path = MODELS_DIR / 'sentiment_model.pkl',
     output_path: Path = Path("output/metrics.json")
 ):
@@ -29,8 +34,7 @@ def main(
     X = pd.read_csv(PROCESSED_DATA_DIR / "X_test.csv").values
     y_true = pd.read_csv(PROCESSED_DATA_DIR / "y_test.csv", header=None).values.ravel()
 
-    # Load vectorizer and model
-    vectorizer = joblib.load(vectorizer_path)
+    # Load model
     model = joblib.load(model_path)
 
     # Predict
@@ -50,7 +54,7 @@ def main(
 
     # Save metrics
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(output_path, "w") as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=4)
 
     logger.success(f"Evaluation complete. Metrics saved to {output_path}")

@@ -1,3 +1,5 @@
+"""Defines global paths and logging configuration for the project."""
+
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -26,8 +28,7 @@ FIGURES_DIR = REPORTS_DIR / "figures"
 try:
     from tqdm import tqdm
 
-    if logger._core.handlers:
-        logger.remove()
+    logger.remove()
 
     logger.add(lambda msg: tqdm.write(msg, end=""), colorize=True)
 except ModuleNotFoundError:

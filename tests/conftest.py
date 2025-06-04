@@ -1,13 +1,16 @@
-import pandas as pd
-import sys
 from pathlib import Path
+import sys
+
+import pandas as pd
 
 # Add the project root (the directory containing model_training/) to PYTHONPATH
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import pytest
 from pathlib import Path
+
 from modeling.predict import SentimentPredictor
+import pytest
+
 from model_training.config import EXTERNAL_DATA_DIR, MODELS_DIR
 
 # Paths to data/model artifacts tracked by DVC

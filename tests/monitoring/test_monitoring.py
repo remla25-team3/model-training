@@ -1,16 +1,12 @@
-import pytest
-import numpy as np
-import pandas as pd
 import os
-import time
-import hashlib
-from scipy.stats import ks_2samp
 from pathlib import Path
-import joblib
-import tracemalloc
 
-# Ensure project root on PYTHONPATH
 import sys
+import time
+
+import pandas as pd
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from model_training.config import MODELS_DIR

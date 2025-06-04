@@ -1,12 +1,12 @@
-import time
-import pickle
-import hashlib
-import joblib
-import pytest
-import tracemalloc
-import pandas as pd
-import sys
 from pathlib import Path
+import pickle
+import sys
+import time
+import tracemalloc
+
+import joblib
+import pandas as pd
+import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 

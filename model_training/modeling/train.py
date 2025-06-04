@@ -1,39 +1,41 @@
-import joblib
-import pandas as pd
-import pickle
-import typer
+"""Train model for sentiment analysis on restaurant reviews."""
 
-from config import MODELS_DIR, PROCESSED_DATA_DIR, EXTERNAL_DATA_DIR
-from lib_ml.preprocessing import preprocess
-from loguru import logger
 from pathlib import Path
+import pickle
+
+from config import MODELS_DIR, PROCESSED_DATA_DIR, INTERIM_DATA_DIR
+import joblib
+from loguru import logger
+import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
-from sklearn.metrics import confusion_matrix, accuracy_score
-import joblib
+import typer
 
 app = typer.Typer()
 
-def train_model(features_path: Path, dataset_path: Path, model_path: Path):
+def train_model(features_path: Path, dataset_path: Path, model_path: Path, X_test_path: Path, y_test_path: Path) -> float:
     """
     Trains the sentiment analysis model based on the Restaurant Sentiment
     Analysis project (https://github.com/proksch/restaurant-sentiment).
 
     The resulting model is stored in model_training/data/sentiment_model.pkl.
     """
-    df = pd.read_csv(dataset_path, delimiter='\t', quoting=3)
-    corpus = preprocess(df)
-    
+    df = pd.read_csv(dataset_path, header=None)
+    corpus = df.iloc[:, 0].values
+    y = df.iloc[:, 1].values
+
     cv = CountVectorizer(max_features=1420)
     X = cv.fit_transform(corpus).toarray()
-    y = df.iloc[:, -1].values
-    pickle.dump(cv, open(features_path, "wb"))
+
+    with open(features_path, "wb") as f:
+        pickle.dump(cv, f)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    pd.DataFrame(X_test).to_csv(PROCESSED_DATA_DIR / "X_test.csv", index=False)
-    pd.DataFrame(y_test).to_csv(PROCESSED_DATA_DIR / "y_test.csv", index=False, header=False)
+    pd.DataFrame(X_test).to_csv(X_test_path, index=False)
+    pd.DataFrame(y_test).to_csv(y_test_path, index=False, header=False)
 
     classifier = SVC(probability=True)
     classifier.fit(X_train, y_train)
@@ -51,15 +53,17 @@ def train_model(features_path: Path, dataset_path: Path, model_path: Path):
 @app.command()
 def main(
     features_path: Path = PROCESSED_DATA_DIR / 'features.csv',
-    dataset_path: Path = EXTERNAL_DATA_DIR / 'a1_RestaurantReviews_HistoricDump.tsv',
+    dataset_path: Path = INTERIM_DATA_DIR / 'data_interim.csv',
     model_path: Path = MODELS_DIR / 'sentiment_model.pkl',
+    X_test: Path = PROCESSED_DATA_DIR / "X_test.csv",
+    y_test: Path = PROCESSED_DATA_DIR / "y_test.csv",
 ):
     """
     Trains the sentiment model and stores the model in `models`.
     """
     logger.info("Training sentiment model...")
 
-    accuracy = train_model(features_path, dataset_path, model_path)
+    accuracy = train_model(features_path, dataset_path, model_path, X_test, y_test)
 
     logger.success(f"Modeling training complete. Accuracy: {accuracy:.4f}")
 

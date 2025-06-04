@@ -1,7 +1,9 @@
-import pytest
 import numpy as np
 import pandas as pd
+import pytest
+
 from model_training.modeling.train import train_model
+
 
 @pytest.mark.development
 def test_nondeterminism_robustness(trained_model):

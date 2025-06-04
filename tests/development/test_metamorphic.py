@@ -1,7 +1,10 @@
-import pytest
 import random
-import pandas as pd
 import re
+
+import pandas as pd
+import pytest
+
+
 def wrap(text: str) -> pd.DataFrame:
     return pd.DataFrame({"Review": [text]})
 
