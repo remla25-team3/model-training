@@ -23,8 +23,10 @@ jobs:
           pip install 'dvc[gdrive]'
             
       - name: Fetch access key DVC
+        env:
+          SERVICE_KEY : ${{ secrets.SERVICE_KEY }} 
         run: |
-          echo '${{ secrets.SERVICE_KEY }}' > service_key.json
+          echo "$SERVICE_KEY" > service_key.json
 
       - name: DVC pull
         run:
