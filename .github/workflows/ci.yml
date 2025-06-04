@@ -36,9 +36,11 @@ jobs:
           dvc remote modify gdrive_remote gdrive_client_id "$CLIENT_ID"
           dvc remote modify gdrive_remote gdrive_client_secret "$CLIENT_SECRET"
 
+          
+          dvc repro
+          
           dvc pull --force
 
-          dvc repro
 
   lint:
     name: Lint Code
