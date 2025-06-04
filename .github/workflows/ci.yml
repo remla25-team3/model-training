@@ -18,9 +18,9 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install test dependencies
+      - name: Install dvc for pull
         run: |
-          pip install -r requirements.txt
+          pip install 'dvc[gdrive]'
 
       - name: DVC pull
         run: |
