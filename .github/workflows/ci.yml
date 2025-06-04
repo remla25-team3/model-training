@@ -31,7 +31,7 @@ jobs:
 
           echo "$SERVICE_KEY" > service_key.json
           
-          dvc remote modify dvc-remote gdrive_service_account_json_file "$CREDENTIALS"
+          dvc remote modify gdrive_remote gdrive_service_account_json_file "$CREDENTIALS"
           
           dvc pull -v
 
