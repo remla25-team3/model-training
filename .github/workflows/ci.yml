@@ -5,6 +5,26 @@ on:
   pull_request:
 
 jobs:
+  dvc:
+    name: Pull DVC
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: DVC pull
+        run: |
+          dvc remote modify dvc-remote gdrive_client_id ${{secrets.DVC_CLIENT_ID}}
+          dvc remote modify dvc-remote gdrive_client_secret ${{secrets.DVC_CLIENT_SECRET}}
+
+          # set auth method
+          dvc remote modify dvc-remote gdrive_use_service_account false
+
+          # Pull data
+          dvc pull
+
+
+
+
+
   lint:
     name: Lint Code
     runs-on: ubuntu-latest
