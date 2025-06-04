@@ -24,10 +24,11 @@ jobs:
 
       - name: DVC pull
         run: |
-          #add remote
+
+          # add remote
           dvc remote add -d dvc-remote ${{secrets.DVC_REMOTE_URL}} 
 
-          #add authentication
+          # add authentication
           dvc remote modify dvc-remote gdrive_client_id ${{secrets.DVC_CLIENT_ID}}
           dvc remote modify dvc-remote gdrive_client_secret ${{secrets.DVC_CLIENT_SECRET}}
           dvc remote modify dvc-remote gdrive_use_service_account false
