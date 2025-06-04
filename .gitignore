@@ -4,6 +4,9 @@ tests/tmp
 tests/data/tmp
 output/
 
+#conda envs
+.conda
+
 # Mac OS-specific storage files
 .DS_Store
 

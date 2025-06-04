@@ -27,7 +27,7 @@ def train_model(features_path: Path, dataset_path: Path, model_path: Path):
     
     cv = CountVectorizer(max_features=1420)
     X = cv.fit_transform(corpus).toarray()
-    y = df.iloc[:, -1].values
+    y = df.iloc[:, -1].values[:len(X)]  #ensure X and y are same size
     pickle.dump(cv, open(features_path, "wb"))
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
