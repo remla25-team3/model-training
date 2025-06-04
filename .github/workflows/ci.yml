@@ -26,8 +26,8 @@ jobs:
       - name: Fetch access key DVC and pull
         env:
           SERVICE_KEY: ${{ secrets.SERVICE_KEY }}
-          CLIENT_ID: ${{secrets.GDRIVE_CLIENT_ID}}
-          CLIENT_SECRET: ${{secrets.GDRIVE_CLIENT_SECRET}}
+          CLIENT_ID: ${{ secrets.GDRIVE_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
         run: |
           echo "$SERVICE_KEY" > service_key.json
           
