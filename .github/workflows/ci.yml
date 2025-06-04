@@ -21,16 +21,15 @@ jobs:
       - name: Install dvc for pull
         run: |
           pip install 'dvc[gdrive]'
+
             
-      - name: Fetch access key DVC
+      - name: Fetch access key DVC and pull
         env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/service_key.json
           SERVICE_KEY : ${{ secrets.SERVICE_KEY }} 
         run: |
           echo "$SERVICE_KEY" > service_key.json
-
-      - name: DVC pull
-        run:
-          dvc pull
+          dvc pull -v
 
   lint:
     name: Lint Code
