@@ -21,23 +21,13 @@ jobs:
       - name: Install dvc for pull
         run: |
           pip install 'dvc[gdrive]'
+            
+      - name: Fetch access key DVC
+        run: |
+          echo '${{ secrets.SERVICE_KEY }}' > service_key.json
 
       - name: DVC pull
-        env: 
-          DVC_REMOTE_URL: ${{ secrets.DVC_REMOTE_URL }}
-          DVC_CLIENT_ID: ${{ secrets.DVC_CLIENT_ID }}
-          DVC_CLIENT_SECRET: ${{ secrets.DVC_CLIENT_SECRET }}
-        run: |
-
-          # add remote
-          dvc remote add -d dvc-remote DVC_REMOTE_URL 
-
-          # add authentication
-          dvc remote modify dvc-remote gdrive_client_id DVC_CLIENT_ID
-          dvc remote modify dvc-remote gdrive_client_secret DVC_CLIENT_SECRET
-          dvc remote modify dvc-remote gdrive_use_service_account false
-
-          # Pull data
+        run:
           dvc pull
 
   lint:
