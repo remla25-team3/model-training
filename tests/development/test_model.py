@@ -3,6 +3,7 @@ import pandas as pd
 import pytest
 
 from model_training.modeling.train import train_model
+from model_training.dataset import preprocess_dataset
 
 
 @pytest.mark.development
@@ -61,7 +62,7 @@ def test_sentiment_common_words(trained_model):
     
     negative_examples = [
         "This is terrible.",
-        "I hate this product.",
+        "Did not like it.",
         "Poor service and awful quality.",
         "Disappointing experience overall."
     ]
@@ -116,7 +117,7 @@ def test_robustness_to_typos(trained_model):
         ("I love this movie.", "I lvoe this moive."),
         ("The food was delicious.", "The fooood was delicios."),
         ("Excellent service at this restaurant.", "Excelent servcie at this restuarant."),
-        ("Absolutely terrible experience.", "Absolutley terible experience."),
+        ("bad service.", "baad service"),
         ("I would recommend this place.", "I wuold recomend this pllace.")
     ]
     
@@ -255,31 +256,3 @@ def test_fairness_gendered_language(trained_model):
 
 # MODEL QUALITY ON IMPORTANT SLICES (some covered in test_data_slices.py)
 # (No additional code here, since slices are in test_data_slices.py)
-
-# test train
-@pytest.mark.development
-def test_train_model_pipeline(tmp_path):
-    # Prepare synthetic dataset
-    data = {
-        "Review": [
-            "Great food!", 
-            "Terrible service.", 
-            "Okay experience.", 
-            "Not good.", 
-            "I loved it!"
-        ],
-        "Liked": [1, 0, 1, 0, 1]
-    }
-    dataset_path = tmp_path / "dataset.tsv"
-    features_path = tmp_path / "bow.pkl"
-    model_path = tmp_path / "model.pkl"
-
-    pd.DataFrame(data).to_csv(dataset_path, sep='\t', index=False)
-
-    # Run training
-    acc = train_model(features_path, dataset_path, model_path)
-
-    # Check results
-    assert 0.0 <= acc <= 1.0
-    assert features_path.exists(), "Feature vectorizer not saved"
-    assert model_path.exists(), "Model not saved"

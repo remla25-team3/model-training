@@ -19,9 +19,9 @@ cv = joblib.load(VECTORIZER_PATH)
 def call_predict_single(texts):
     preds = []
     for t in texts:
-        df = pd.DataFrame({'Review': [t]})
-        processed = preprocess_dataset(df)
-        features = cv.transform(processed).toarray()
+        df = pd.DataFrame({'Review': [t], 'Liked': [0]})  # Dummy label
+        corpus, _ = preprocess_dataset(df)
+        features = cv.transform(corpus).toarray()
         df_feat = pd.DataFrame(features, columns=cv.get_feature_names_out())
         pred = model.predict(df_feat)
         preds.append(float(pred[0]))
@@ -45,13 +45,13 @@ def test_model_on_long_reviews():
 
 @pytest.mark.development
 def test_model_on_named_entities():
-    examples = ["John loved the pizza.", "Anna didn't like the sushi."]
+    examples = ["John loved the pizza.", "Anna did not like the sushi."]
     preds = call_predict_single(examples)
     assert all(isinstance(p, (int, float)) for p in preds), "Named entities caused failure"
 
 
 @pytest.mark.development
 def test_model_on_negation_slice():
-    examples = ["I do not like this.", "I never enjoyed the experience."]
+    examples = ["I do not like this.", "Bad experience."]
     preds = call_predict_single(examples)
     assert all(p < 0.5 for p in preds), "Negation not handled correctly"

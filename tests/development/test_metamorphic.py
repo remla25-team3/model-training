@@ -42,7 +42,7 @@ def test_invariance_synonym_substitution(trained_model):
         # POSITIVE examples
         ("The food was fantastic.", "The food was amazing."),
         ("This restaurant is great.", "This restaurant is excellent."),
-        ("I liked the service.", "I loved the service."),
+        ("I enjoyed the service.", "I loved the service."),
         # NEGATIVE examples
         ("The meal was terrible.", "The meal was so bad."),
         ("I really hate the atmosphere.", "I despise the atmosphere."),

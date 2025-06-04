@@ -7,6 +7,7 @@ data/processed/y_test.csv
 tests/tmp
 tests/data/tmp
 output/
+model_training/processed_data
 
 # Mac OS-specific storage files
 .DS_Store

@@ -1,6 +1,6 @@
 [MAIN]
 jobs=1  # Run with one process; increase to speed up on multicore systems
-ignore=CVS,.git,__pycache__,.pytest_cache,venv,env,.venv,.env,references,tests  # Ignore standard environment, VCS, cache dirs
+ignore=CVS,.git,__pycache__,.pytest_cache,venv,env,.venv,.env,references  # Ignore standard environment, VCS, cache dirs
 ignore-patterns=test_.*\.py,.*_test\.py  # Ignore test files during standard lint (can be linted separately)
 
 # Add source directories to the module path
@@ -8,7 +8,7 @@ init-hook='import sys; sys.path.append(".")'
 
 # Load both custom and built-in Pylint extensions for richer analysis
 load-plugins=
-    pylint_custom.ml_pylint,  # custom ML-specific checker(s)
+    pylint_custom.ml_pylint,  # custom ML-specific checker for NaN code smell
     pylint.extensions.check_elif,
     pylint.extensions.bad_builtin,  # Warn on use of bad builtins like map/filter
     pylint.extensions.docparams,  # Check if docstrings mention all parameters

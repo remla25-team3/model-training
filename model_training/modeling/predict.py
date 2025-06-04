@@ -2,7 +2,7 @@
 
 from config import MODELS_DIR, PROCESSED_DATA_DIR
 import joblib
-from lib_ml.preprocessing import preprocess
+from model_training.dataset import preprocess
 import pandas as pd
 
 
@@ -24,12 +24,12 @@ class SentimentPredictor:
             float: Probability that the review is positive.
         """
 
-        cleaned_texts = preprocess(df)
+        corpus, _ = preprocess(df, inference=True)
 
-        if isinstance(cleaned_texts, list) and len(cleaned_texts) >= 1:
-            cleaned = cleaned_texts[0]
+        if not corpus:
+            cleaned = ""
         else:
-            cleaned = cleaned_texts
+            cleaned = corpus[0]
 
         features = self.vectorizer.transform([cleaned]).toarray()
         probabilities = self.model.predict_proba(features)[0]

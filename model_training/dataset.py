@@ -40,7 +40,7 @@ def _prepare_stopwords() -> set:
         return set()
 
 
-def preprocess(df: pd.DataFrame) -> Tuple[List[str], List[str]]:
+def preprocess(df: pd.DataFrame, inference: bool = False) -> Tuple[List[str], List[str]]:
     """
     Process reviews from a DataFrame through text preprocessing pipeline.
     
@@ -98,7 +98,7 @@ def preprocess(df: pd.DataFrame) -> Tuple[List[str], List[str]]:
 
     for _, row in df.iterrows():
         review = row['Review']
-        label = row[1]  # assumes label is in second column
+        label = row[1] if not inference else None
 
         review = re.sub(r'[^a-zA-Z]', ' ', review)
         review = review.lower()
@@ -109,9 +109,10 @@ def preprocess(df: pd.DataFrame) -> Tuple[List[str], List[str]]:
         if processed_review and pattern.fullmatch(processed_review) and processed_review not in seen:
             seen.add(processed_review)
             corpus.append(processed_review)
-            labels.append(label)
+            if not inference:
+                labels.append(label)
 
-    return corpus, labels
+    return (corpus, labels) if not inference else (corpus, [])
 
 
 

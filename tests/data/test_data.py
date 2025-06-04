@@ -88,12 +88,12 @@ def test_preprocessed_not_empty(download_and_preprocess):
 @pytest.mark.data
 def test_preprocessed_no_empty_strings(download_and_preprocess):
     _, pre_df = download_and_preprocess
-    assert pre_df[0].apply(lambda x: isinstance(x, str) and x.strip()).all(), "Some preprocessed rows are empty or not strings"
+    assert pre_df["Review"].apply(lambda x: isinstance(x, str) and x.strip()).all(), "Some preprocessed rows are empty or not strings"
 
 @pytest.mark.data
 def test_no_duplicate_preprocessed_reviews(download_and_preprocess):
     _, pre_df = download_and_preprocess
-    dups = pre_df[0].duplicated()
+    dups = pre_df["Review"].duplicated()
     assert dups.sum() == 0, f"Found {dups.sum()} duplicate preprocessed reviews"
 
 
@@ -103,7 +103,7 @@ def test_no_duplicate_preprocessed_reviews(download_and_preprocess):
 def test_preprocessed_text_clean(download_and_preprocess):
     _, pre_df = download_and_preprocess
     pattern = re.compile(r'^[a-z ]+$')
-    invalid_rows = pre_df[~pre_df[0].apply(lambda x: bool(pattern.fullmatch(x)))]
+    invalid_rows = pre_df[~pre_df["Review"].apply(lambda x: bool(pattern.fullmatch(x)))]
     print("Non-matching rows:")
     print(invalid_rows.head(10))
     assert invalid_rows.empty, "Some preprocessed reviews contain invalid characters"
@@ -112,7 +112,7 @@ def test_preprocessed_text_clean(download_and_preprocess):
 @pytest.mark.parametrize("invalid", [".", ",","!", "\n", "\t"])
 def test_no_invalid_placeholders_in_review(download_and_preprocess, invalid):
     _, pre_df = download_and_preprocess
-    reviews = pre_df[0].dropna().astype(str)
+    reviews = pre_df["Review"].dropna().astype(str)
     assert not reviews.str.fullmatch(invalid).any(), f"'Review' column should not contain placeholder '{invalid}'"
 
 
@@ -121,7 +121,7 @@ def test_no_invalid_placeholders_in_review(download_and_preprocess, invalid):
 @pytest.mark.data
 def test_no_email_or_phone_in_raw(download_and_preprocess):
     _ , pre_df = download_and_preprocess
-    review_series = pre_df[0].dropna().astype(str)
+    review_series = pre_df["Review"].dropna().astype(str)
     # Simple regex for emails and phone-like patterns
     email_pattern = re.compile(r'\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b')
     phone_pattern = re.compile(r'\b(\+?\d[\d\-\s]{7,}\d)\b')
@@ -134,7 +134,7 @@ def test_no_email_or_phone_in_raw(download_and_preprocess):
 @pytest.mark.features
 def test_preprocessed_token_length(download_and_preprocess):
     _, pre_df = download_and_preprocess
-    token_counts = pre_df[0].str.split().str.len()
+    token_counts = pre_df["Review"].str.split().str.len()
     assert token_counts.mean() > 2, "Average token count too low"
     assert token_counts.min() > 0, "Reviews should not be empty"
     assert token_counts.max() < 1000, "Reviews should not exceed 1000 characters"
@@ -151,7 +151,7 @@ def test_preprocess_handles_extra_columns(tmp_path):
         "unrelated_column": ["foo", "bar"]
     })
     # Should still preprocess only 'Review' without error
-    corpus = preprocess_dataset(df_extra)
+    corpus, _ = preprocess_dataset(df_extra)
     assert isinstance(corpus, list) and all(isinstance(x, str) for x in corpus), \
         "Preprocess failed when DataFrame has extra columns"
 
@@ -162,7 +162,7 @@ def test_preprocess_handles_extra_columns(tmp_path):
 def test_preprocessed_has_variance(download_and_preprocess):
     _, pre_df = download_and_preprocess
     # Check that not all rows are identical
-    assert pre_df[0].nunique() > 1, "Review column has zero variance"
+    assert pre_df["Review"].nunique() > 1, "Review column has zero variance"
 
 
 

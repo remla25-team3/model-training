@@ -15,14 +15,15 @@ import typer
 
 app = typer.Typer()
 
-def train_model(features_path: Path, dataset_path: Path, model_path: Path, X_test_path: Path, y_test_path: Path) -> float:
+def train_model(features_path: Path, dataset_path: Path, model_path: Path,
+                X_test_path: Path, y_test_path: Path) -> float:
     """
     Trains the sentiment analysis model based on the Restaurant Sentiment
     Analysis project (https://github.com/proksch/restaurant-sentiment).
 
     The resulting model is stored in model_training/data/sentiment_model.pkl.
     """
-    df = pd.read_csv(dataset_path, header=None)
+    df = pd.read_csv(dataset_path)
     corpus = df.iloc[:, 0].values
     y = df.iloc[:, 1].values
 
