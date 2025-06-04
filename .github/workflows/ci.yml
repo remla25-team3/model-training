@@ -37,6 +37,8 @@ jobs:
           dvc remote modify gdrive_remote gdrive_client_secret "$CLIENT_SECRET"
           dvc remote modify gdrive_remote url "gdrive://1n5l1DxOWcoMcQXKRBHFJO4iDftQTHAgc"
 
+          rm -rf .dvc/cache
+
           dvc pull --force
 
           dvc repro
