@@ -25,15 +25,16 @@ jobs:
             
       - name: Fetch access key DVC and pull
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/service_key.json
-          SERVICE_KEY : ${{ secrets.SERVICE_KEY }} 
+          SERVICE_KEY: ${{ secrets.SERVICE_KEY }}
         run: |
-
           echo "$SERVICE_KEY" > service_key.json
           
           dvc remote modify gdrive_remote gdrive_use_service_account true
-          
-          dvc pull -v
+          dvc remote modify gdrive_remote gdrive_service_account_json_file_path service_key.json
+
+          dvc pull
+
+          dvc repro
 
   lint:
     name: Lint Code
