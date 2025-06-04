@@ -27,10 +27,6 @@ This project uses [DVC](https://dvc.org) to define and manage the ML pipeline, i
 - Feature extraction
 - Model training and evaluation
 
-> **Remote storage is not configured at the moment.**  
-> Integration with Google Drive was attempted but encountered known [issues](https://dvc.org/doc/user-guide/data-management/remote-storage/google-drive) .  
-> For now, **DVC stores all outputs locally**.
-
 ### Prerequisites
 
 Install Python dependencies:
@@ -49,18 +45,38 @@ To avoid errors such as “This app is blocked,” we recommend that each user c
 Follow the DVC documentation guide until step 6 to create your credentials:
 [Using a Custom Google Cloud project](https://dvc.org/doc/user-guide/data-management/remote-storage/google-drive#using-a-custom-google-cloud-project-recommended)
 
-Once you've generated your client_id and client_secret, configure them locally by running:
+> **Note**: In Step 5, make sure to select **Desktop app**
+
+There's one last step to do: navigate to [Google Auth Platform -> Audience](https://console.cloud.google.com/auth/audience) and under testing press **Publish app** to be able to access it.
+
+Once you've generated your client_id and client_secret, configure them by running:
 
 ```bash
-dvc remote modify gdrive_remote gdrive_client_id 'YOUR_CLIENT_ID' --local
-dvc remote modify gdrive_remote gdrive_client_secret 'YOUR_CLIENT_SECRET' --local
+dvc remote modify gdrive_remote gdrive_client_id 'YOUR_CLIENT_ID'
+dvc remote modify gdrive_remote gdrive_client_secret 'YOUR_CLIENT_SECRET'
 ```
+
+> **Note:** Do not push the Google Drive credentials to GitHub.  
+> After testing or setting up the remote, either save the last two lines of `.dvc/config` somewhere safe, or remove them before committing (you can always go get them in you profile):
+>
+> ```ini
+> [core]
+>    remote = gdrive_remote
+> ['remote "gdrive_remote"']
+>    url = gdrive://1n5l1DxOWcoMcQXKRBHFJO4iDftQTHAgc
+> ```
+>
+> You’ll need to re-add them locally each time to interact with the remote storage.
 
 After setup, you can use the following commands to synchronize data with the remote storage:
 
 ```bash
 dvc pull
 ```
+
+The first time you will need to identify (log in with the same Google account you followed the previous steps with), Google may then recognize the access as not safe, but proceed anyway (under Advanced > Go on)
+
+Well done! Now you should be able to interact with the remote storage!
 
 ## How to reproduce the full pipeline
 
@@ -80,13 +96,11 @@ Common scenarios where you’ll use this:
 ├── LICENSE            <- Open-source license if one is chosen
 ├── Makefile           <- Makefile with convenience commands like `make data` or `make train`
 ├── README.md          <- The top-level README for developers using this project.
+|
 ├── data                (managed my DVC)
 │   ├── external       <- Data from third party sources.
 │   ├── interim        <- Intermediate data that has been transformed.
 │   ├── processed      <- The final, canonical data sets for modeling.
-│   └── raw            <- The original, immutable data dump.
-│
-├── docs               <- A default mkdocs project; see www.mkdocs.org for details
 │
 ├── models             <- (Managed by DVC) Trained and serialized models, model predictions, or model summaries
 │
@@ -96,11 +110,6 @@ Common scenarios where you’ll use this:
 │
 ├── pyproject.toml     <- Project configuration file with package metadata for 
 │                         model-training and configuration for tools like black
-│
-├── references         <- Data dictionaries, manuals, and all other explanatory materials.
-│
-├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
-│   └── figures        <- Generated graphics and figures to be used in reporting
 │
 ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
 │                         generated with `pip freeze > requirements.txt`
@@ -119,7 +128,8 @@ Common scenarios where you’ll use this:
     │
     ├── modeling                
     │   ├── __init__.py 
-    │   ├── predict.py          <- Code to run model inference with trained models          
+    │   ├── predict.py          <- Code to run model inference with trained models  
+    |   ├── evaluate.py         <- Code to evaluate model performance (accuracy, f1, precision, recall, ROC-AUC)
     │   └── train.py            <- Code to train models
     │
     └── plots.py                <- Code to create visualizations

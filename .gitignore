@@ -1,5 +1,9 @@
 # Data and models
-#data/
+data
+data/external
+data/interim
+data/processed/X_test.csv
+data/processed/y_test.csv
 tests/tmp
 tests/data/tmp
 output/
