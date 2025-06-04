@@ -35,6 +35,7 @@ jobs:
           dvc remote modify gdrive_remote gdrive_service_account_json_file_path "service_key.json"
           dvc remote modify gdrive_remote gdrive_client_id "$CLIENT_ID"
           dvc remote modify gdrive_remote gdrive_client_secret "$CLIENT_SECRET"
+          dvc remote modify gdrive_remote url "gdrive://1n5l1DxOWcoMcQXKRBHFJO4iDftQTHAgc"
 
           dvc pull --force
 
