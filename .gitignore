@@ -1,13 +1,9 @@
 # Data and models
-data
-data/external
-data/interim
-data/processed/X_test.csv
-data/processed/y_test.csv
 tests/tmp
 tests/data/tmp
 output/
 model_training/processed_data
+models/
 
 # Mac OS-specific storage files
 .DS_Store
@@ -20,6 +16,7 @@ model_training/processed_data
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
+__pycache__
 *.py[cod]
 *$py.class
 

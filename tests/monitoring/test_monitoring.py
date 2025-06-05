@@ -10,7 +10,6 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from model_training.config import MODELS_DIR
-from model_training.dataset import preprocess_dataset
 
 # Paths (reuse from conftest)
 VECTORIZER_PATH = MODELS_DIR / "bow_sentiment_model.pkl"
@@ -35,8 +34,8 @@ def test_data_invariants_hold(df):
     assert df['Liked'].isin([0, 1]).all(), "Historic 'Liked' has values outside {0,1}"
 
 
-
 # Models are not too stale
+
 
 @pytest.mark.monitoring
 def test_model_staleness():
@@ -45,7 +44,7 @@ def test_model_staleness():
     """
     mtime = os.path.getmtime(MODEL_PATH)
     age_days = (time.time() - mtime) / (24 * 3600)
-    assert age_days < 90, f"Model is {age_days:.1f} days old; may need retraining."
+    assert age_days < 90, f"Model is {age_days: .1f} days old, may need retraining."
 
 
 # Models are numerically stable
@@ -61,7 +60,7 @@ def test_model_prediction_consistency_under_perturbation(trained_model):
     df2 = pd.DataFrame({'Review': [variant]})
     p1 = trained_model.predict(df1)
     p2 = trained_model.predict(df2)
-    assert abs(p1 - p2) < 0.02, f"Numerical instability: {p1:.3f} vs {p2:.3f}"
+    assert abs(p1 - p2) < 0.02, f"Numerical instability: {p1: .3f} vs {p2: .3f}"
 
 
 # 6. Compute performance has not regressed
@@ -75,4 +74,4 @@ def test_inference_latency_not_regressed(trained_model):
     start = time.time()
     _ = trained_model.predict(sample)
     elapsed = time.time() - start
-    assert elapsed < 1.0, f"Monitoring: inference latency regressed to {elapsed:.3f}s"
+    assert elapsed < 1.0, f"Monitoring: inference latency regressed to {elapsed: .3f}s"

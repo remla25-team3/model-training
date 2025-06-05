@@ -31,7 +31,7 @@ def main(
     logger.info("Evaluating trained sentiment model...")
 
     # Load preprocessed review data (test set) and labels
-    X = pd.read_csv(PROCESSED_DATA_DIR / "X_test.csv").values
+    X = pd.read_csv(PROCESSED_DATA_DIR / "X_test.csv")
     y_true = pd.read_csv(PROCESSED_DATA_DIR / "y_test.csv", header=None).values.ravel()
 
     # Load model

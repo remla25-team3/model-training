@@ -1,7 +1,6 @@
 """Train model for sentiment analysis on restaurant reviews."""
 
 from pathlib import Path
-import pickle
 
 from config import MODELS_DIR, PROCESSED_DATA_DIR, INTERIM_DATA_DIR
 import joblib
@@ -14,6 +13,7 @@ from sklearn.svm import SVC
 import typer
 
 app = typer.Typer()
+
 
 def train_model(features_path: Path, dataset_path: Path, model_path: Path,
                 X_test_path: Path, y_test_path: Path) -> float:
@@ -28,12 +28,13 @@ def train_model(features_path: Path, dataset_path: Path, model_path: Path,
     y = df.iloc[:, 1].values
 
     cv = CountVectorizer(max_features=1420)
-    X = cv.fit_transform(corpus).toarray()
+    X_array = cv.fit_transform(corpus).toarray()
+    feature_names = cv.get_feature_names_out()
+    X_df = pd.DataFrame(X_array, columns=feature_names)
 
-    with open(features_path, "wb") as f:
-        pickle.dump(cv, f)
+    joblib.dump(cv, features_path)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X_df, y, test_size=0.2, random_state=42)
 
     pd.DataFrame(X_test).to_csv(X_test_path, index=False)
     pd.DataFrame(y_test).to_csv(y_test_path, index=False, header=False)
@@ -66,7 +67,8 @@ def main(
 
     accuracy = train_model(features_path, dataset_path, model_path, X_test, y_test)
 
-    logger.success(f"Modeling training complete. Accuracy: {accuracy:.4f}")
+    logger.success(f"Modeling training complete. Accuracy: {accuracy: .4f}")
+
 
 if __name__ == "__main__":
     app()

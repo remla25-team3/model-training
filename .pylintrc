@@ -1,7 +1,8 @@
 [MAIN]
 jobs=1  # Run with one process; increase to speed up on multicore systems
-ignore=CVS,.git,__pycache__,.pytest_cache,venv,env,.venv,.env,references  # Ignore standard environment, VCS, cache dirs
-ignore-patterns=test_.*\.py,.*_test\.py  # Ignore test files during standard lint (can be linted separately)
+# Ignore standard environment, VCS, cache dirs
+ignore=CVS,.git,__pycache__,.pytest_cache,venv,env,.venv,.env,references,.dvc,.github,data,htmlcov,models,references
+#ignore-patterns=test_.*\.py,.*_test\.py  # Ignore test files during standard lint (can be linted separately)
 
 # Add source directories to the module path
 init-hook='import sys; sys.path.append(".")'
@@ -68,7 +69,7 @@ module-naming-style=snake_case
 max-line-length=110
 indent-after-paren=4
 indent-string='    '
-max-module-lines=1000  # Accept larger modules, common in notebooks or monolithic scripts
+max-module-lines=1000  # Accept larger modules
 
 [DESIGN]
 max-args=10  # High for flexibility in ML/data pipelines

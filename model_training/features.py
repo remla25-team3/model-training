@@ -1,7 +1,7 @@
 """Feature extraction from text corpus"""
 
 from pathlib import Path
-import pickle
+import joblib
 
 from loguru import logger
 import pandas as pd
@@ -32,8 +32,7 @@ def main(
 
     # Export BoW dictionary to later use in prediction
     try:
-        with open(bow_path, 'wb') as bow_f:
-            pickle.dump(cv, bow_f)
+        joblib.dump(cv, bow_path)
     except OSError as exc:
         logger.error(f"Error storing sentiment model: {exc}")
 

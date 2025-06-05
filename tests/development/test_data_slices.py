@@ -1,3 +1,13 @@
+"""
+test_data_slices.py
+
+Development tests that validate model behavior on different data slices:
+- short vs. long reviews
+- named entities
+- negations
+"""
+
+
 from pathlib import Path
 import sys
 
@@ -16,7 +26,11 @@ MODEL_PATH = MODELS_DIR / "sentiment_model.pkl"
 model = joblib.load(MODEL_PATH)
 cv = joblib.load(VECTORIZER_PATH)
 
+
 def call_predict_single(texts):
+    """
+    Preprocess and predict sentiment scores for a list of input texts.
+    """
     preds = []
     for t in texts:
         df = pd.DataFrame({'Review': [t], 'Liked': [0]})  # Dummy label
@@ -30,6 +44,9 @@ def call_predict_single(texts):
 
 @pytest.mark.development
 def test_model_on_short_reviews():
+    """
+    Test model predictions on short single-word reviews.
+    """
     examples = ["Good", "Bad", "Tasty", "Awful"]
     preds = call_predict_single(examples)
     assert all(isinstance(p, float) for p in preds), "Short reviews failed"
@@ -37,6 +54,9 @@ def test_model_on_short_reviews():
 
 @pytest.mark.development
 def test_model_on_long_reviews():
+    """
+    Test model predictions on long repeated text reviews.
+    """
     long_text = "The service was wonderful and the ambiance was perfect. " * 10
     examples = [long_text, long_text + " Loved it!"]
     preds = call_predict_single(examples)
@@ -45,6 +65,9 @@ def test_model_on_long_reviews():
 
 @pytest.mark.development
 def test_model_on_named_entities():
+    """
+    Test model robustness when named entities (e.g., names) are present.
+    """
     examples = ["John loved the pizza.", "Anna did not like the sushi."]
     preds = call_predict_single(examples)
     assert all(isinstance(p, (int, float)) for p in preds), "Named entities caused failure"
@@ -52,6 +75,9 @@ def test_model_on_named_entities():
 
 @pytest.mark.development
 def test_model_on_negation_slice():
+    """
+    Test whether the model assigns low sentiment to negated expressions.
+    """
     examples = ["I do not like this.", "Bad experience."]
     preds = call_predict_single(examples)
     assert all(p < 0.5 for p in preds), "Negation not handled correctly"

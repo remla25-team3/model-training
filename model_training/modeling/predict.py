@@ -2,7 +2,7 @@
 
 from config import MODELS_DIR, PROCESSED_DATA_DIR
 import joblib
-from model_training.dataset import preprocess
+from lib_ml.preprocessing import preprocess
 import pandas as pd
 
 
@@ -31,8 +31,10 @@ class SentimentPredictor:
         else:
             cleaned = corpus[0]
 
-        features = self.vectorizer.transform([cleaned]).toarray()
-        probabilities = self.model.predict_proba(features)[0]
+        features_array = self.vectorizer.transform([cleaned]).toarray()
+        feature_names = self.vectorizer.get_feature_names_out()
+        features_df = pd.DataFrame(features_array, columns=feature_names)
+        probabilities = self.model.predict_proba(features_df)[0]
 
         return probabilities[1]
 

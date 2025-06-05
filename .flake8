@@ -1,0 +1,35 @@
+; .flake8 — flake8 config tuned for REMLA project
+
+[flake8]
+
+; Ignore E402: module level import not at top of file
+
+ignore =
+    E402
+
+; Apply flake8 to all relevant source files
+exclude =
+    .dvc,
+    .pytest_cache,
+    .venv,
+    htmlcov,
+    __pycache__,
+    model_training.egg-info,
+    models,
+    references,
+    .coverage,
+    venv/,
+    venv,
+    ./venv/,
+    ./venv,
+    .git,
+    env,
+    .env,
+    output,
+    scripts,
+
+; Show source code of warning and extended info
+show-source = true
+statistics = true
+count = true
+max-line-length = 110
