@@ -32,7 +32,11 @@ Install Python dependencies:
 pip install -r requirements.txt
 ```
 
-### DVC Remote Access Setup
+### DVC Remote Access Setup (with service account)
+
+Follow step 1 of [Using service accounts](https://dvc.org/doc/user-guide/data-management/remote-storage/google-drive#using-service-accounts) to create a service account. Download the generated .json key and put it in root of this repo. In this .json file, you will find a client_email entry. Copy this email adress. Go to the shared drive folder (see group chat for link), and share it with this client_email. Now, dvc pull --force and dvc repro should bring you up to date.
+
+### DVC Remote Access Setup (with personal account) (DEPRECATED)
 
 This project uses a shared Google Drive folder as a DVC remote.
 In order to download (pull) or upload (push) data, you’ll need to authenticate using your Google account via OAuth.
