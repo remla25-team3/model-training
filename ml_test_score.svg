@@ -1,0 +1,6 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='150' height='20'>
+<rect width='150' height='20' fill='gray'/>
+<rect x='70' width='80' height='20' fill='brightgreen'/>
+<text x='10' y='14' fill='white' font-family='Verdana' font-size='12'>ML Test</text>
+<text x='75' y='14' fill='white' font-family='Verdana' font-size='12'>8/10</text>
+</svg>
