@@ -1,0 +1,38 @@
+# bandit.y,l : Security linter configuration for Python REMLA project
+
+skips:
+    - B101  # assert
+    - B311  # random seed undefined, skip because we test this with custim pylint plugin
+      
+severity-level: LOW
+confidence-level: MEDIUM
+
+# Exclude common irrelevant folders
+exclude:
+    .dvc,
+    .pytest_cache,
+    .venv,
+    htmlcov,
+    __pycache__,
+    model_training.egg-info,
+    models,
+    references,
+    .coverage,
+    venv/,
+    venv,
+    ./venv/,
+    ./venv,
+    .git,
+    env,
+    .env,
+    output,
+    scripts,
+
+# Show more context per result: 'true' enables verbose output
+show-issue-lines: true
+
+# Aggregate issues per file rather than one line per issue
+aggregated: true
+
+# Enable recursive scanning into subfolders
+recursive: true

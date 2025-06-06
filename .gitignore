@@ -1,8 +1,9 @@
 # Data and models
-#data/
 tests/tmp
 tests/data/tmp
 output/
+model_training/processed_data
+models/
 
 #conda envs
 .conda
@@ -18,6 +19,7 @@ output/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
+__pycache__
 *.py[cod]
 *$py.class
 

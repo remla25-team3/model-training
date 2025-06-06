@@ -1,13 +1,16 @@
-import pandas as pd
-import sys
+"""Test configuration for the model training project."""
+
 from pathlib import Path
+import sys
+
+import pandas as pd
 
 # Add the project root (the directory containing model_training/) to PYTHONPATH
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import pytest
-from pathlib import Path
 from modeling.predict import SentimentPredictor
+import pytest
+
 from model_training.config import EXTERNAL_DATA_DIR, MODELS_DIR
 
 # Paths to data/model artifacts tracked by DVC
@@ -21,8 +24,8 @@ def df():
     """Fixture that loads the dataset, assumes it's been pulled via DVC."""
     if not DATA_PATH.exists():
         pytest.fail(f"Dataset file not found at {DATA_PATH}. Did you forget to run `dvc pull`?")
-    df = pd.read_csv(DATA_PATH, sep="\t")
-    return df
+    df_test = pd.read_csv(DATA_PATH, sep="\t")
+    return df_test
 
 
 @pytest.fixture(scope="session")
@@ -33,8 +36,8 @@ def trained_model():
             f"Model files not found. Run `dvc pull` or `dvc repro` first.\n"
             f"Expected: {MODEL_PATH} and {FEATURES_PATH}"
         )
-    trained_model = SentimentPredictor(
+    trained_model_test = SentimentPredictor(
         model_path=str(MODEL_PATH),
         features_path=str(FEATURES_PATH)
     )
-    return trained_model
+    return trained_model_test

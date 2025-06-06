@@ -1,13 +1,14 @@
+"""Feature extraction from text corpus"""
+
 from pathlib import Path
+import joblib
 
 from loguru import logger
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
 import typer
 
-import pandas as pd
-import pickle
-from sklearn.feature_extraction.text import CountVectorizer
-
-from model_training.config import PROCESSED_DATA_DIR, INTERIM_DATA_DIR, MODELS_DIR
+from model_training.config import INTERIM_DATA_DIR, MODELS_DIR, PROCESSED_DATA_DIR
 
 app = typer.Typer()
 
@@ -31,10 +32,9 @@ def main(
 
     # Export BoW dictionary to later use in prediction
     try:
-        with open(bow_path, 'wb') as bow_f:
-            pickle.dump(cv, bow_f)
-    except OSError or Exception:
-        logger.error("Error storing sentiment model.")
+        joblib.dump(cv, bow_path)
+    except OSError as exc:
+        logger.error(f"Error storing sentiment model: {exc}")
 
     # Export features
     df = pd.DataFrame(x, columns=cv.get_feature_names_out())

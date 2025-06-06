@@ -1,3 +1,9 @@
+<<<<<<< HEAD
 /features.csv
 /X_test.csv
 /y_test.csv
+=======
+features.csv
+X_test.csv
+y_test.csv
+>>>>>>> dvc-remote

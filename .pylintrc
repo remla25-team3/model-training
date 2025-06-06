@@ -1,0 +1,88 @@
+[MAIN]
+jobs=1  # Run with one process; increase to speed up on multicore systems
+# Ignore standard environment, VCS, cache dirs
+ignore=CVS,.git,__pycache__,.pytest_cache,venv,env,.venv,.env,references,.dvc,.github,data,htmlcov,models,references
+#ignore-patterns=test_.*\.py,.*_test\.py  # Ignore test files during standard lint (can be linted separately)
+
+# Add source directories to the module path
+init-hook='import sys; sys.path.append(".")'
+
+# Load both custom and built-in Pylint extensions for richer analysis
+load-plugins=
+    pylint_custom.ml_pylint,  # custom ML-specific checker for NaN code smell
+    pylint.extensions.check_elif,
+    pylint.extensions.bad_builtin,  # Warn on use of bad builtins like map/filter
+    pylint.extensions.docparams,  # Check if docstrings mention all parameters
+    pylint.extensions.for_any_all,  # Warn on using for-loops for any/all logic
+    pylint.extensions.set_membership,  # Warn on set usage patterns
+    pylint.extensions.code_style,  # Enforce stylistic conventions (e.g., spacing)
+    pylint.extensions.overlapping_exceptions,
+    pylint.extensions.typing,  # Warn on bad type hints
+    pylint.extensions.redefined_variable_type,
+    pylint.extensions.comparison_placement
+
+persistent=yes  # Cache results for better performance
+fail-under=8.0  # Fail CI or return non-zero exit if score is below threshold
+
+[MESSAGES CONTROL]
+# Disable noisy or irrelevant warnings for data science, ML workflows
+disable=
+    raw-checker-failed,  # Internal error in pylint
+    bad-inline-option,
+    locally-disabled,
+    file-ignored,
+    suppressed-message,
+    useless-suppression,
+    deprecated-pragma,
+    use-symbolic-message-instead,
+    too-few-public-methods,  # OK for data classes / config objects
+    too-many-arguments,  # Acceptable in ML model functions
+    too-many-locals,
+    too-many-branches,
+    too-many-statements,
+    invalid-name,  # Use custom naming policy instead
+    wrong-import-position  # Often irrelevant in notebooks or scripts
+
+[BASIC]
+# Accept common variable names in ML and plotting contexts
+good-names=
+    i,j,k,
+    X,y,
+    X_train,y_train,
+    X_test,y_test,
+    df,
+    ax,fig,
+    lr,
+    f1,
+
+# Disallow ambiguous or overloaded built-in names
+bad-names=data,input,list,dict
+
+# Enforce common naming conventions
+function-naming-style=snake_case
+variable-naming-style=snake_case
+const-naming-style=UPPER_CASE
+class-naming-style=PascalCase
+module-naming-style=snake_case
+
+[FORMAT]
+max-line-length=110
+indent-after-paren=4
+indent-string='    '
+max-module-lines=1000  # Accept larger modules
+
+[DESIGN]
+max-args=10  # High for flexibility in ML/data pipelines
+max-attributes=15  # Useful for large config or model classes
+max-bool-expr=5
+max-branches=15
+max-locals=20
+max-parents=7
+max-public-methods=25
+max-returns=6
+max-statements=60
+min-public-methods=1
+
+[REPORTS]
+reports=no  # Don't show full summary report
+score=yes  # Still compute numeric score
