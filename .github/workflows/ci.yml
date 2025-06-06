@@ -23,24 +23,7 @@ jobs:
           pip install 'dvc[gdrive]'
 
             
-      - name: Fetch access key DVC and pull
-        env:
-          CLIENT_ID: ${{ secrets.GDRIVE_CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
-        run: |
-          echo '${{ secrets.SERVICE_KEY }}' > service_key.json
-          
-          dvc remote modify gdrive_remote gdrive_use_service_account true
-          dvc remote modify gdrive_remote gdrive_service_account_json_file_path "service_key.json"
-          dvc remote modify gdrive_remote gdrive_client_id "$CLIENT_ID"
-          dvc remote modify gdrive_remote gdrive_client_secret "$CLIENT_SECRET"
-          dvc remote modify gdrive_remote url "gdrive://1n5l1DxOWcoMcQXKRBHFJO4iDftQTHAgc"
 
-          rm -rf .dvc/cache
-
-          dvc pull --force
-
-          dvc repro
 
           
 
@@ -61,7 +44,7 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install flake8 pylint
-
+      
       - name: Run flake8
         run: |
           flake8 . --count --statistics --show-source || true
@@ -91,6 +74,25 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install pytest pytest-cov jq
+
+      - name: Fetch access key DVC and pull
+        env:
+          CLIENT_ID: ${{ secrets.GDRIVE_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
+        run: |
+          echo '${{ secrets.SERVICE_KEY }}' > service_key.json
+          
+          dvc remote modify gdrive_remote gdrive_use_service_account true
+          dvc remote modify gdrive_remote gdrive_service_account_json_file_path "service_key.json"
+          dvc remote modify gdrive_remote gdrive_client_id "$CLIENT_ID"
+          dvc remote modify gdrive_remote gdrive_client_secret "$CLIENT_SECRET"
+          dvc remote modify gdrive_remote url "gdrive://1n5l1DxOWcoMcQXKRBHFJO4iDftQTHAgc"
+
+          rm -rf .dvc/cache
+
+          dvc pull --force
+
+          dvc repro
 
       - name: Run pytest with coverage
         id: pytest
