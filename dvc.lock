@@ -34,8 +34,8 @@ stages:
       size: 2525321
     - path: models/bow_sentiment_model.pkl
       hash: md5
-      md5: 81a679e85f72a4e22d80ecb54308bfdc
-      size: 39448
+      md5: 17e13505e755874f98651f62936c76ea
+      size: 39445
   train:
     cmd: python -m model_training.modeling.train
     deps:
@@ -45,8 +45,8 @@ stages:
       size: 31437
     - path: data/processed/features.csv
       hash: md5
-      md5: d3b1e37cc713bfa8450407487e9c807b
-      size: 39448
+      md5: 261427a9af70e2e4ccd59d1937b8cd30
+      size: 39445
     - path: model_training/modeling/train.py
       hash: md5
       md5: 517a628daaef01444942a3820bc85d6f
@@ -62,7 +62,7 @@ stages:
       size: 354
     - path: models/sentiment_model.pkl
       hash: md5
-      md5: 5015b28fc6862904f7ccfbc5138edf12
+      md5: bee61cd3128290106b9af3fc2821e672
       size: 7363211
   evaluate:
     cmd: python -m model_training.modeling.evaluate
@@ -81,11 +81,11 @@ stages:
       size: 1705
     - path: models/bow_sentiment_model.pkl
       hash: md5
-      md5: 81a679e85f72a4e22d80ecb54308bfdc
-      size: 39448
+      md5: 17e13505e755874f98651f62936c76ea
+      size: 39445
     - path: models/sentiment_model.pkl
       hash: md5
-      md5: 5015b28fc6862904f7ccfbc5138edf12
+      md5: bee61cd3128290106b9af3fc2821e672
       size: 7363211
     outs:
     - path: output/metrics.json
