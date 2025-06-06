@@ -62,7 +62,7 @@ stages:
       size: 354
     - path: models/sentiment_model.pkl
       hash: md5
-      md5: bee61cd3128290106b9af3fc2821e672
+      md5: 6588ae53f46f00685c77a52efa4d2a32
       size: 7363211
   evaluate:
     cmd: python -m model_training.modeling.evaluate
@@ -85,7 +85,7 @@ stages:
       size: 39445
     - path: models/sentiment_model.pkl
       hash: md5
-      md5: bee61cd3128290106b9af3fc2821e672
+      md5: 6588ae53f46f00685c77a52efa4d2a32
       size: 7363211
     outs:
     - path: output/metrics.json

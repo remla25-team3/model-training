@@ -57,9 +57,10 @@ jobs:
         run: |
           echo '${{ secrets.SERVICE_KEY }}' > service_key.json
 
+          dvc pull --force
           dvc repro
 
-          dvc pull -v --force
+
 
 
 
