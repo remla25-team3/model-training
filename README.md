@@ -138,7 +138,7 @@ To ensure code quality, security, and readability across our Python codebase, we
 
 **Run it**:
 ```bash
-pylint model_training tests scripts pylint_custom
+pylint model_training tests scripts
 ```
 
 To test if our custom plugin actually detects the code smell, we implemented a simple test in which we use **random**, **numpy.random** and **tensorflow.random** without specifying the **random seed**.

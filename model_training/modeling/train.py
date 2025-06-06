@@ -13,7 +13,7 @@ from sklearn.svm import SVC
 import typer
 
 app = typer.Typer()
-
+SEED = 42  # Random seed for reproducibility
 
 def train_model(features_path: Path, dataset_path: Path, model_path: Path,
                 X_test_path: Path, y_test_path: Path) -> float:
@@ -23,18 +23,12 @@ def train_model(features_path: Path, dataset_path: Path, model_path: Path,
 
     The resulting model is stored in model_training/data/sentiment_model.pkl.
     """
-    df = pd.read_csv(dataset_path)
-    corpus = df.iloc[:, 0].values
-    y = df.iloc[:, 1].values
+    X_df = pd.read_csv(features_path)
+    df = pd.read_csv(dataset_path, header=None)
+    df = df.dropna(subset=[0])
+    y = df[1].values
 
-    cv = CountVectorizer(max_features=1420)
-    X_array = cv.fit_transform(corpus).toarray()
-    feature_names = cv.get_feature_names_out()
-    X_df = pd.DataFrame(X_array, columns=feature_names)
-
-    joblib.dump(cv, features_path)
-
-    X_train, X_test, y_train, y_test = train_test_split(X_df, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X_df, y, test_size=0.2, random_state=SEED)
 
     pd.DataFrame(X_test).to_csv(X_test_path, index=False)
     pd.DataFrame(y_test).to_csv(y_test_path, index=False, header=False)
@@ -44,9 +38,6 @@ def train_model(features_path: Path, dataset_path: Path, model_path: Path,
     joblib.dump(classifier, model_path)
 
     y_pred = classifier.predict(X_test)
-
-    # cm = confusion_matrix(y_test, y_pred)
-    # print(cm)
 
     acc = accuracy_score(y_test, y_pred)
     return acc
