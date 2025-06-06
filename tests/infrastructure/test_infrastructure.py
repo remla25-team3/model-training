@@ -14,6 +14,7 @@ import sys
 import time
 import tracemalloc
 from pathlib import Path
+from sklearn.feature_extraction.text import CountVectorizer
 
 import joblib
 import pandas as pd
@@ -185,10 +186,16 @@ def test_train(tmp_path):
     ]
     labels = [1, 0, 1, 1, 0]
     dataset_path = tmp_path / "data_interim.csv"
-    pd.DataFrame({"Review": reviews, "Label": labels}).to_csv(dataset_path, index=False, header=False)
+    df = pd.DataFrame({"Review": reviews, "Label": labels})
+    df.to_csv(dataset_path, index=False, header=False)
 
-    # Define file paths
-    features_path = tmp_path / "features.pkl"
+    # Feature extraction (simulate featurize stage)
+    cv = CountVectorizer(max_features=1420)
+    X = cv.fit_transform(df["Review"]).toarray()
+    features_path = tmp_path / "features.csv"
+    pd.DataFrame(X, columns=cv.get_feature_names_out()).to_csv(features_path, index=False)
+
+    # Define output file paths
     model_path = tmp_path / "model.pkl"
     x_test_path = tmp_path / "X_test.csv"
     y_test_path = tmp_path / "y_test.csv"
@@ -201,4 +208,5 @@ def test_train(tmp_path):
         X_test_path=x_test_path,
         y_test_path=y_test_path
     )
+
     assert 0.0 <= acc <= 1.0, "Returned accuracy must be in [0, 1]"
