@@ -118,17 +118,32 @@ jobs:
           <text x='75' y='14' fill='white' font-family='Verdana' font-size='12'>$SCORE/$MAX</text>
           </svg>" > ml_test_score.svg
 
+      # set up action bot    
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ vars.TEAM_APP_ID }}
+          private-key: ${{ secrets.TEAM_APP_KEY }}
+
       - name: Commit SVG badges to badge-badges branch
+        env:           
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
+
           git fetch origin
+          # append token to origin
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git
+
+
           git worktree add ../badge-badges badge-badges || \
           git worktree add ../badge-badges -b badge-badges origin/badge-badges
 
           cp coverage.svg pylint.svg ml_test_score.svg ../badge-badges/
 
           cd ../badge-badges
+
           git add coverage.svg pylint.svg ml_test_score.svg
           git commit -m 'Update badge SVGs [skip ci]' || echo "No changes to commit"
           git push origin badge-badges
