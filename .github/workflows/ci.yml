@@ -5,23 +5,67 @@ on:
   pull_request:
 
 jobs:
-  lint:
-    name: Lint Code
+  # lint:
+  #   name: Lint Code
+  #   runs-on: ubuntu-latest
+
+  #   steps:     
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+
+  #     - name: Set up Python 3.12
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: '3.12'
+
+  #     - name: Install dependencies
+  #       run: |
+  #         pip install -r requirements.txt
+  #         pip install flake8 pylint
+      
+  #     - name: Run flake8
+  #       run: |
+  #         flake8 . --count --statistics --show-source || true
+
+  #     - name: Run pylint and capture score
+  #       run: |
+  #         pylint model_training tests > pylint.log || true
+  #         SCORE=$(grep 'Your code has been rated at' pylint.log | awk '{print $7}' | cut -d'/' -f1)
+  #         echo "Pylint Score: $SCORE"
+  #         echo "PYLINT_SCORE=$SCORE" >> $GITHUB_ENV
+
+  test:
+    name: Quality Tests and Linting
     runs-on: ubuntu-latest
+    # needs: lint
 
     steps:
+        # set up action bot    
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ vars.TEAM_APP_ID }}
+          private-key: ${{ secrets.TEAM_APP_KEY }}
+      
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
+      - name: Install test dependencies
         run: |
           pip install -r requirements.txt
           pip install flake8 pylint
+          pip install pytest pytest-cov jq
+          pip install coverage-badge
+          pip install anybadge
+
+          sudo apt-get update && sudo apt-get install -y jq bc
 
       - name: Run flake8
         run: |
@@ -34,24 +78,11 @@ jobs:
           echo "Pylint Score: $SCORE"
           echo "PYLINT_SCORE=$SCORE" >> $GITHUB_ENV
 
-  test:
-    name: Run Tests with Coverage
-    runs-on: ubuntu-latest
-    needs: lint
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install test dependencies
+      - name: Fetch access key DVC and pull
         run: |
-          pip install -r requirements.txt
-          pip install pytest pytest-cov jq
+          echo '${{ secrets.SERVICE_KEY }}' > service_key.json
+          dvc pull --force
+          dvc repro
 
       - name: Run pytest with coverage
         id: pytest
@@ -78,27 +109,7 @@ jobs:
           echo "ML Test Score: $ML_SCORE/$ML_MAX"
           echo "ML_SCORE=$ML_SCORE" >> $GITHUB_ENV
           echo "ML_MAX=$ML_MAX" >> $GITHUB_ENV
-
-  badges:
-    name: Generate SVG Badges
-    runs-on: ubuntu-latest
-    needs: test
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-          pip install coverage-badge
-          sudo apt-get update && sudo apt-get install -y jq bc
-
+      
       - name: Generate coverage badge
         run: |
           coverage-badge -o coverage.svg -f
@@ -106,34 +117,23 @@ jobs:
       - name: Generate pylint badge
         run: |
           SCORE="${{ env.PYLINT_SCORE }}"
-          COLOR="brightgreen"
-          if (( $(echo "$SCORE < 9.0" | bc -l) )); then COLOR="yellow"; fi
-          if (( $(echo "$SCORE < 5.0" | bc -l) )); then COLOR="red"; fi
-          echo "<svg xmlns='http://www.w3.org/2000/svg' width='150' height='20'>
-          <rect width='150' height='20' fill='gray'/>
-          <rect x='70' width='80' height='20' fill='$COLOR'/>
-          <text x='10' y='14' fill='white' font-family='Verdana' font-size='12'>Pylint</text>
-          <text x='75' y='14' fill='white' font-family='Verdana' font-size='12'>$SCORE</text>
-          </svg>" > pylint.svg
+
+          anybadge -l "Pylint" -v "$SCORE" -f pylint.svg 5=red 7=orange 10=green
+
 
       - name: Generate ML Test Score badge
         run: |
           SCORE="${{ env.ML_SCORE }}"
           MAX="${{ env.ML_MAX }}"
-          COLOR="brightgreen"
-          if (( $(echo "$SCORE < 5.0" | bc -l) )); then COLOR="yellow"; fi
-          if (( $(echo "$SCORE < 3.0" | bc -l) )); then COLOR="red"; fi
-          echo "<svg xmlns='http://www.w3.org/2000/svg' width='150' height='20'>
-          <rect width='150' height='20' fill='gray'/>
-          <rect x='70' width='80' height='20' fill='$COLOR'/>
-          <text x='10' y='14' fill='white' font-family='Verdana' font-size='12'>ML Test</text>
-          <text x='75' y='14' fill='white' font-family='Verdana' font-size='12'>$SCORE/$MAX</text>
-          </svg>" > ml_test_score.svg
+
+          anybadge -l "Test Score" -v "$SCORE" -s "/$MAX" -f ml_test_score.svg 5=red 7=orange 10=green
+
 
       - name: Commit SVG badges to badge-badges branch
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
+
           git fetch origin
           git worktree add ../badge-badges badge-badges || \
           git worktree add ../badge-badges -b badge-badges origin/badge-badges
@@ -141,6 +141,73 @@ jobs:
           cp coverage.svg pylint.svg ml_test_score.svg ../badge-badges/
 
           cd ../badge-badges
+
           git add coverage.svg pylint.svg ml_test_score.svg
           git commit -m 'Update badge SVGs [skip ci]' || echo "No changes to commit"
           git push origin badge-badges
+
+  # badges:
+  #   name: Generate SVG Badges
+  #   runs-on: ubuntu-latest
+  #   needs: test
+
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+
+  #     - name: Set up Python 3.12
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: '3.12'
+
+  #     - name: Install dependencies
+  #       run: |
+  #         pip install -r requirements.txt
+  #         pip install coverage-badge
+  #         sudo apt-get update && sudo apt-get install -y jq bc
+
+  #     - name: Generate coverage badge
+  #       run: |
+  #         coverage-badge -o coverage.svg -f
+
+  #     - name: Generate pylint badge
+  #       run: |
+  #         SCORE="${{ env.PYLINT_SCORE }}"
+  #         COLOR="brightgreen"
+  #         if (( $(echo "$SCORE < 9.0" | bc -l) )); then COLOR="yellow"; fi
+  #         if (( $(echo "$SCORE < 5.0" | bc -l) )); then COLOR="red"; fi
+  #         echo "<svg xmlns='http://www.w3.org/2000/svg' width='150' height='20'>
+  #         <rect width='150' height='20' fill='gray'/>
+  #         <rect x='70' width='80' height='20' fill='$COLOR'/>
+  #         <text x='10' y='14' fill='white' font-family='Verdana' font-size='12'>Pylint</text>
+  #         <text x='75' y='14' fill='white' font-family='Verdana' font-size='12'>$SCORE</text>
+  #         </svg>" > pylint.svg
+
+  #     - name: Generate ML Test Score badge
+  #       run: |
+  #         SCORE="${{ env.ML_SCORE }}"
+  #         MAX="${{ env.ML_MAX }}"
+  #         COLOR="brightgreen"
+  #         if (( $(echo "$SCORE < 5.0" | bc -l) )); then COLOR="yellow"; fi
+  #         if (( $(echo "$SCORE < 3.0" | bc -l) )); then COLOR="red"; fi
+  #         echo "<svg xmlns='http://www.w3.org/2000/svg' width='150' height='20'>
+  #         <rect width='150' height='20' fill='gray'/>
+  #         <rect x='70' width='80' height='20' fill='$COLOR'/>
+  #         <text x='10' y='14' fill='white' font-family='Verdana' font-size='12'>ML Test</text>
+  #         <text x='75' y='14' fill='white' font-family='Verdana' font-size='12'>$SCORE/$MAX</text>
+  #         </svg>" > ml_test_score.svg
+
+  #     - name: Commit SVG badges to badge-badges branch
+  #       run: |
+  #         git config --global user.name 'github-actions'
+  #         git config --global user.email 'github-actions@github.com'
+  #         git fetch origin
+  #         git worktree add ../badge-badges badge-badges || \
+  #         git worktree add ../badge-badges -b badge-badges origin/badge-badges
+
+  #         cp coverage.svg pylint.svg ml_test_score.svg ../badge-badges/
+
+  #         cd ../badge-badges
+  #         git add coverage.svg pylint.svg ml_test_score.svg
+  #         git commit -m 'Update badge SVGs [skip ci]' || echo "No changes to commit"
+  #         git push origin badge-badges

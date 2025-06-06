@@ -1,9 +1,15 @@
+#service key
+service_key.json
+
 # Data and models
 tests/tmp
 tests/data/tmp
 output/
 model_training/processed_data
 models/
+
+#conda envs
+.conda
 
 # Mac OS-specific storage files
 .DS_Store
