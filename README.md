@@ -130,9 +130,9 @@ Common scenarios where you’ll use this:
 
 ## ✅ Project Quality Metrics
 
-![Coverage](https://github.com/remla25-team7/model-training/raw/badge-badges/coverage.svg)
-![Pylint](https://github.com/remla25-team7/model-training/raw/badge-badges/pylint.svg)
-![ML Test Score](https://github.com/remla25-team7/model-training/raw/badge-badges/ml_test_score.svg)
+![Coverage](https://github.com/remla25-team3/model-training/raw/badge-badges/coverage.svg)
+![Pylint](https://github.com/remla25-team3/model-training/raw/badge-badges/pylint.svg)
+![ML Test Score](https://github.com/remla25-team3/model-training/raw/badge-badges/ml_test_score.svg)
 
 These badges are automatically updated via GitHub Actions on every push and pull request.  
 They reflect:
