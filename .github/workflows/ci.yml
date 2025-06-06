@@ -5,28 +5,6 @@ on:
   pull_request:
 
 jobs:
-  dvc:
-    name: Pull DVC
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install dvc for pull
-        run: |
-          pip install 'dvc[gdrive]'
-
-            
-
-
-          
-
   lint:
     name: Lint Code
     runs-on: ubuntu-latest
@@ -81,16 +59,8 @@ jobs:
           CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
         run: |
           echo '${{ secrets.SERVICE_KEY }}' > service_key.json
-          
-          dvc remote modify gdrive_remote gdrive_use_service_account true
-          dvc remote modify gdrive_remote gdrive_service_account_json_file_path "service_key.json"
-          dvc remote modify gdrive_remote gdrive_client_id "$CLIENT_ID"
-          dvc remote modify gdrive_remote gdrive_client_secret "$CLIENT_SECRET"
-          dvc remote modify gdrive_remote url "gdrive://1n5l1DxOWcoMcQXKRBHFJO4iDftQTHAgc"
 
-          rm -rf .dvc/cache
-
-          dvc pull --force
+          dvc pull -v --force
 
           dvc repro
 
