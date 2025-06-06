@@ -5,39 +5,39 @@ on:
   pull_request:
 
 jobs:
-  lint:
-    name: Lint Code
-    runs-on: ubuntu-latest
+  # lint:
+  #   name: Lint Code
+  #   runs-on: ubuntu-latest
 
-    steps:     
-      - name: Checkout code
-        uses: actions/checkout@v4
+  #   steps:     
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+  #     - name: Set up Python 3.12
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: '3.12'
 
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-          pip install flake8 pylint
+  #     - name: Install dependencies
+  #       run: |
+  #         pip install -r requirements.txt
+  #         pip install flake8 pylint
       
-      - name: Run flake8
-        run: |
-          flake8 . --count --statistics --show-source || true
+  #     - name: Run flake8
+  #       run: |
+  #         flake8 . --count --statistics --show-source || true
 
-      - name: Run pylint and capture score
-        run: |
-          pylint model_training tests > pylint.log || true
-          SCORE=$(grep 'Your code has been rated at' pylint.log | awk '{print $7}' | cut -d'/' -f1)
-          echo "Pylint Score: $SCORE"
-          echo "PYLINT_SCORE=$SCORE" >> $GITHUB_ENV
+  #     - name: Run pylint and capture score
+  #       run: |
+  #         pylint model_training tests > pylint.log || true
+  #         SCORE=$(grep 'Your code has been rated at' pylint.log | awk '{print $7}' | cut -d'/' -f1)
+  #         echo "Pylint Score: $SCORE"
+  #         echo "PYLINT_SCORE=$SCORE" >> $GITHUB_ENV
 
   test:
-    name: Run Tests with Coverage
+    name: Quality Tests and Linting
     runs-on: ubuntu-latest
-    needs: lint
+    # needs: lint
 
     steps:
         # set up action bot    
@@ -60,9 +60,21 @@ jobs:
       - name: Install test dependencies
         run: |
           pip install -r requirements.txt
+          pip install flake8 pylint
           pip install pytest pytest-cov jq
           pip install coverage-badge
           sudo apt-get update && sudo apt-get install -y jq bc
+
+      - name: Run flake8
+        run: |
+          flake8 . --count --statistics --show-source || true
+
+      - name: Run pylint and capture score
+        run: |
+          pylint model_training tests > pylint.log || true
+          SCORE=$(grep 'Your code has been rated at' pylint.log | awk '{print $7}' | cut -d'/' -f1)
+          echo "Pylint Score: $SCORE"
+          echo "PYLINT_SCORE=$SCORE" >> $GITHUB_ENV
 
       - name: Fetch access key DVC and pull
         run: |
@@ -104,8 +116,10 @@ jobs:
         run: |
           SCORE="${{ env.PYLINT_SCORE }}"
           COLOR="brightgreen"
+
           if (( $(echo "$SCORE < 9.0" | bc -l) )); then COLOR="yellow"; fi
           if (( $(echo "$SCORE < 5.0" | bc -l) )); then COLOR="red"; fi
+
           echo "<svg xmlns='http://www.w3.org/2000/svg' width='150' height='20'>
           <rect width='150' height='20' fill='gray'/>
           <rect x='70' width='80' height='20' fill='$COLOR'/>
@@ -118,8 +132,10 @@ jobs:
           SCORE="${{ env.ML_SCORE }}"
           MAX="${{ env.ML_MAX }}"
           COLOR="brightgreen"
+
           if (( $(echo "$SCORE < 5.0" | bc -l) )); then COLOR="yellow"; fi
           if (( $(echo "$SCORE < 3.0" | bc -l) )); then COLOR="red"; fi
+
           echo "<svg xmlns='http://www.w3.org/2000/svg' width='150' height='20'>
           <rect width='150' height='20' fill='gray'/>
           <rect x='70' width='80' height='20' fill='$COLOR'/>
