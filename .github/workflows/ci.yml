@@ -63,6 +63,8 @@ jobs:
           pip install flake8 pylint
           pip install pytest pytest-cov jq
           pip install coverage-badge
+          pip install anybadge
+
           sudo apt-get update && sudo apt-get install -y jq bc
 
       - name: Run flake8
@@ -114,34 +116,40 @@ jobs:
 
       - name: Generate pylint badge
         run: |
-          SCORE="${{ env.PYLINT_SCORE }}"
-          COLOR="brightgreen"
+          # SCORE="${{ env.PYLINT_SCORE }}"
+          # COLOR="brightgreen"
 
-          if (( $(echo "$SCORE < 9.0" | bc -l) )); then COLOR="yellow"; fi
-          if (( $(echo "$SCORE < 5.0" | bc -l) )); then COLOR="red"; fi
+          # if (( $(echo "$SCORE < 9.0" | bc -l) )); then COLOR="yellow"; fi
+          # if (( $(echo "$SCORE < 5.0" | bc -l) )); then COLOR="red"; fi
 
-          echo "<svg xmlns='http://www.w3.org/2000/svg' width='150' height='20'>
-          <rect width='150' height='20' fill='gray'/>
-          <rect x='70' width='80' height='20' fill='$COLOR'/>
-          <text x='10' y='14' fill='white' font-family='Verdana' font-size='12'>Pylint</text>
-          <text x='75' y='14' fill='white' font-family='Verdana' font-size='12'>$SCORE</text>
-          </svg>" > pylint.svg
+          # echo "<svg xmlns='http://www.w3.org/2000/svg' width='150' height='20'>
+          # <rect width='150' height='20' fill='gray'/>
+          # <rect x='70' width='80' height='20' fill='$COLOR'/>
+          # <text x='10' y='14' fill='white' font-family='Verdana' font-size='12'>Pylint</text>
+          # <text x='75' y='14' fill='white' font-family='Verdana' font-size='12'>$SCORE</text>
+          # </svg>" > pylint.svg
+          anybadge --label=Pylint --value=$SCORE --file=pylint.svg \
+          --thresholds 5=red:7=orange:9=yellow:10=brightgreen
+
 
       - name: Generate ML Test Score badge
         run: |
-          SCORE="${{ env.ML_SCORE }}"
-          MAX="${{ env.ML_MAX }}"
-          COLOR="brightgreen"
+          # SCORE="${{ env.ML_SCORE }}"
+          # MAX="${{ env.ML_MAX }}"
+          # COLOR="brightgreen"
 
-          if (( $(echo "$SCORE < 5.0" | bc -l) )); then COLOR="yellow"; fi
-          if (( $(echo "$SCORE < 3.0" | bc -l) )); then COLOR="red"; fi
+          # if (( $(echo "$SCORE < 5.0" | bc -l) )); then COLOR="yellow"; fi
+          # if (( $(echo "$SCORE < 3.0" | bc -l) )); then COLOR="red"; fi
 
-          echo "<svg xmlns='http://www.w3.org/2000/svg' width='150' height='20'>
-          <rect width='150' height='20' fill='gray'/>
-          <rect x='70' width='80' height='20' fill='$COLOR'/>
-          <text x='10' y='14' fill='white' font-family='Verdana' font-size='12'>ML Test</text>
-          <text x='75' y='14' fill='white' font-family='Verdana' font-size='12'>$SCORE/$MAX</text>
-          </svg>" > ml_test_score.svg
+          # echo "<svg xmlns='http://www.w3.org/2000/svg' width='150' height='20'>
+          # <rect width='150' height='20' fill='gray'/>
+          # <rect x='70' width='80' height='20' fill='$COLOR'/>
+          # <text x='10' y='14' fill='white' font-family='Verdana' font-size='12'>ML Test</text>
+          # <text x='75' y='14' fill='white' font-family='Verdana' font-size='12'>$SCORE/$MAX</text>
+          # </svg>" > ml_test_score.svg
+
+          anybadge --label=Pylint --value=$SCORE --file=ml_test_score.svg \
+          --thresholds 3=red:5=orange:7=yellow:10=brightgreen
 
       - name: Commit SVG badges to badge-badges branch
         run: |
