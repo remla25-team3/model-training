@@ -54,19 +54,14 @@ jobs:
           pip install pytest pytest-cov jq
 
       - name: Fetch access key DVC and pull
-        env:
-          CLIENT_ID: ${{ secrets.GDRIVE_CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
         run: |
           echo '${{ secrets.SERVICE_KEY }}' > service_key.json
-          
-          echo "SERVICE_KEY_PATH=$(pwd)/service_key.json" >> $GITHUB_ENV
 
-          dvc remote modify gdrive_remote gdrive_service_account_json_file_path "$SERVICE_KEY_PATH"
+          dvc repro
 
           dvc pull -v --force
 
-          dvc repro
+
 
       - name: Run pytest with coverage
         id: pytest
