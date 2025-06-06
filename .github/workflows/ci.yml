@@ -60,7 +60,7 @@ jobs:
       - name: Install test dependencies
         run: |
           pip install -r requirements.txt
-          pip install flake8 pylint
+          pip install flake8 pylint bandit
           pip install pytest pytest-cov jq
           pip install coverage-badge
           pip install anybadge
@@ -69,7 +69,7 @@ jobs:
 
       - name: Run flake8
         run: |
-          flake8 . --count --statistics --show-source || true
+          flake8 model_training tests  --count --statistics --show-source || true
 
       - name: Run pylint and capture score
         run: |
@@ -87,7 +87,8 @@ jobs:
       - name: Run pytest with coverage
         id: pytest
         run: |
-          pytest --cov=model_training --cov=model_training.modeling --cov-report=xml --cov-report=json:coverage.json --cov-fail-under=80 || true
+          pytest --cov= tests --cov=model_training --cov=model_training.modeling \
+            --cov-report=xml --cov-report=json:coverage.json --cov-fail-under=80
 
       - name: Extract coverage percentage
         run: |

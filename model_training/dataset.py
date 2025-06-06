@@ -2,11 +2,11 @@
 
 from pathlib import Path
 
+from lib_ml.preprocessing import preprocess
 from loguru import logger
+import pandas as pd
 import typer
 
-import pandas as pd
-from lib_ml.preprocessing import preprocess
 from model_training.config import EXTERNAL_DATA_DIR, INTERIM_DATA_DIR
 
 app = typer.Typer()

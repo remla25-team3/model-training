@@ -1,6 +1,17 @@
+"""
+Monitoring tests for production-readiness and long-term model reliability.
+
+Covers:
+- Input data invariants: schema, nulls, and value constraints
+- Model staleness: ensures the deployed model is recent (e.g., retrained within 90 days)
+- Numerical stability: minor input changes (e.g., punctuation) should not significantly shift predictions
+- Latency regression: ensures inference time remains within acceptable limits
+
+These tests help detect silent failures or performance degradation in real-world serving environments.
+"""
+
 import os
 from pathlib import Path
-
 import sys
 import time
 
@@ -17,6 +28,7 @@ MODEL_PATH = MODELS_DIR / "sentiment_model.pkl"
 
 
 # Data invariants hold for inputs
+
 
 @pytest.mark.monitoring
 def test_data_invariants_hold(df):
@@ -49,6 +61,7 @@ def test_model_staleness():
 
 # Models are numerically stable
 
+
 @pytest.mark.monitoring
 def test_model_prediction_consistency_under_perturbation(trained_model):
     """
@@ -63,7 +76,8 @@ def test_model_prediction_consistency_under_perturbation(trained_model):
     assert abs(p1 - p2) < 0.02, f"Numerical instability: {p1: .3f} vs {p2: .3f}"
 
 
-# 6. Compute performance has not regressed
+# Compute performance has not regressed
+
 
 @pytest.mark.monitoring
 def test_inference_latency_not_regressed(trained_model):

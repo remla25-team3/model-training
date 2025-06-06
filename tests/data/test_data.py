@@ -1,3 +1,16 @@
+"""
+Validates the quality, structure, and privacy of the dataset and extracted features.
+
+This suite focuses on:
+- Raw data schema: column names, types, nulls, class balance
+- Preprocessed data quality: formatting, duplicates, token lengths, unwanted characters
+- Distributional checks: review length, token count bounds, class distribution
+- Privacy and compliance: no emails, phone numbers, or forbidden content in features
+- Feature soundness: ensures non-zero variance and semantic cleanliness
+- Extensibility: verifies pipeline tolerates unexpected columns in input
+- Pipeline coverage: tests feature extraction pipeline end-to-end
+"""
+
 from pathlib import Path
 import re
 import sys
@@ -181,6 +194,14 @@ def test_preprocessed_has_variance(download_and_preprocess):
     _, pre_df = download_and_preprocess
     # Check that not all rows are identical
     assert pre_df["Review"].nunique() > 1, "Review column has zero variance"
+
+
+@pytest.mark.features
+def test_no_forbidden_features(download_and_preprocess):
+    _, pre_df = download_and_preprocess
+    forbidden_words = ["password", "credit", "ssn", "iban"]
+    matches = pre_df["Review"].apply(lambda x: any(w in x for w in forbidden_words))
+    assert not matches.any(), "Forbidden sensitive terms found in preprocessed data"
 
 
 @pytest.mark.data

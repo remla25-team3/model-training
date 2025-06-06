@@ -2,18 +2,19 @@
 
 from pathlib import Path
 
-from config import MODELS_DIR, PROCESSED_DATA_DIR, INTERIM_DATA_DIR
+from config import INTERIM_DATA_DIR, MODELS_DIR, PROCESSED_DATA_DIR
 import joblib
 from loguru import logger
 import pandas as pd
-from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 import typer
 
+
 app = typer.Typer()
 SEED = 42  # Random seed for reproducibility
+
 
 def train_model(features_path: Path, dataset_path: Path, model_path: Path,
                 X_test_path: Path, y_test_path: Path) -> float:
