@@ -52,6 +52,8 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install pytest pytest-cov jq
+          pip install coverage-badge
+          sudo apt-get update && sudo apt-get install -y jq bc
 
       - name: Fetch access key DVC and pull
         run: |
