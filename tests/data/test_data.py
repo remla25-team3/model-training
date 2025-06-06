@@ -1,9 +1,10 @@
+from pathlib import Path
 import re
 import sys
-import pytest
-import tempfile
+
 import pandas as pd
-from pathlib import Path
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from model_training.dataset import download_dataset, preprocess_dataset
 from model_training.features import main
@@ -26,8 +27,8 @@ def download_and_preprocess():
     assert not raw_df.empty, "Downloaded dataset is empty."
 
     # Preprocess
-    corpus = preprocess_dataset(raw_df)
-    pre_df = pd.DataFrame(corpus)
+    corpus, labels = preprocess_dataset(raw_df)
+    pre_df = pd.DataFrame({'Review': corpus, 'Liked': labels})
     pre_df.to_csv(PREPROCESSED_PATH, index=False, header=False)
 
     return raw_df, pre_df
@@ -38,6 +39,7 @@ def download_and_preprocess():
 
 # Data and features expectations (schema)
 
+
 @pytest.mark.data
 def test_raw_columns_match_schema(download_and_preprocess):
     raw_df, _ = download_and_preprocess
@@ -45,6 +47,7 @@ def test_raw_columns_match_schema(download_and_preprocess):
     assert set(raw_df.columns) == expected_columns, (
         f"Raw columns {set(raw_df.columns)} != expected {expected_columns}"
     )
+
 
 @pytest.mark.data
 def test_raw_dtypes_match_schema(download_and_preprocess):
@@ -56,11 +59,13 @@ def test_raw_dtypes_match_schema(download_and_preprocess):
         f"'Liked' dtype {raw_df['Liked'].dtype} is not integer type"
     )
 
+
 @pytest.mark.data
 def test_no_nulls_in_raw_data(download_and_preprocess):
     raw_df, _ = download_and_preprocess
     assert raw_df['Review'].notnull().all(), "Null values found in 'Review' column"
     assert raw_df['Liked'].notnull().all(), "Null values found in 'Liked' column"
+
 
 @pytest.mark.data
 def test_class_balance_not_extreme(download_and_preprocess):
@@ -77,69 +82,82 @@ def test_review_length_bounds(download_and_preprocess):
     assert lengths.max() <= 500, "Reviews should not exceed 500 characters"
 
 
-#PREPROCESSED DATASET TESTS
+# PREPROCESSED DATASET TESTS
+
 
 @pytest.mark.data
 def test_preprocessed_not_empty(download_and_preprocess):
     _, pre_df = download_and_preprocess
     assert not pre_df.empty, "Preprocessed DataFrame should not be empty"
 
+
 @pytest.mark.data
 def test_preprocessed_no_empty_strings(download_and_preprocess):
     _, pre_df = download_and_preprocess
-    assert pre_df[0].apply(lambda x: isinstance(x, str) and x.strip()).all(), "Some preprocessed rows are empty or not strings"
+    assert pre_df["Review"].apply(lambda x: isinstance(x, str) and x.strip()).all(), (
+        "Some preprocessed rows are empty or not strings"
+    )
+
 
 @pytest.mark.data
 def test_no_duplicate_preprocessed_reviews(download_and_preprocess):
     _, pre_df = download_and_preprocess
-    dups = pre_df[0].duplicated()
+    dups = pre_df["Review"].duplicated()
     assert dups.sum() == 0, f"Found {dups.sum()} duplicate preprocessed reviews"
 
 
 # Features adhere to meta‐level requirements (e.g., lowercased, no punctuation, etc.)
 
+
 @pytest.mark.data
 def test_preprocessed_text_clean(download_and_preprocess):
     _, pre_df = download_and_preprocess
     pattern = re.compile(r'^[a-z ]+$')
-    invalid_rows = pre_df[~pre_df[0].apply(lambda x: bool(pattern.fullmatch(x)))]
+    invalid_rows = pre_df[~pre_df["Review"].apply(lambda x: bool(pattern.fullmatch(x)))]
     print("Non-matching rows:")
     print(invalid_rows.head(10))
     assert invalid_rows.empty, "Some preprocessed reviews contain invalid characters"
 
+
 @pytest.mark.data
-@pytest.mark.parametrize("invalid", [".", ",","!", "\n", "\t"])
+@pytest.mark.parametrize("invalid", [".", ",", "!", "\n", "\t"])
 def test_no_invalid_placeholders_in_review(download_and_preprocess, invalid):
     _, pre_df = download_and_preprocess
-    reviews = pre_df[0].dropna().astype(str)
-    assert not reviews.str.fullmatch(invalid).any(), f"'Review' column should not contain placeholder '{invalid}'"
+    reviews = pre_df["Review"].dropna().astype(str)
+    assert not reviews.str.fullmatch(invalid).any(), (
+        f"'Review' column should not contain placeholder '{invalid}'"
+    )
 
 
-# Data pipeline has appropriate privacy controls (e.g., no email addresses or phone numbers in raw/preprocessed)
+# Data pipeline has appropriate privacy controls
+# (e.g., no email addresses or phone numbers in raw/preprocessed)
+
 
 @pytest.mark.data
 def test_no_email_or_phone_in_raw(download_and_preprocess):
-    _ , pre_df = download_and_preprocess
-    review_series = pre_df[0].dropna().astype(str)
+    _, pre_df = download_and_preprocess
+    review_series = pre_df["Review"].dropna().astype(str)
     # Simple regex for emails and phone-like patterns
-    email_pattern = re.compile(r'\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b')
-    phone_pattern = re.compile(r'\b(\+?\d[\d\-\s]{7,}\d)\b')
+    email_pattern = r'\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b'
+    phone_pattern = r'\b(?:\+?\d[\d\-\s]{7,}\d)\b'
     assert not review_series.str.contains(email_pattern).any(), "Found email patterns in raw data"
     assert not review_series.str.contains(phone_pattern).any(), "Found phone‐number patterns in raw data"
 
 
 # No feature’s cost is too much (covered more fully under infrastructure, but here check raw text length)
 
+
 @pytest.mark.features
 def test_preprocessed_token_length(download_and_preprocess):
     _, pre_df = download_and_preprocess
-    token_counts = pre_df[0].str.split().str.len()
+    token_counts = pre_df["Review"].str.split().str.len()
     assert token_counts.mean() > 2, "Average token count too low"
     assert token_counts.min() > 0, "Reviews should not be empty"
     assert token_counts.max() < 1000, "Reviews should not exceed 1000 characters"
 
 
 # New features can be added quickly (if you add a new column, preprocess should ignore it)
+
 
 @pytest.mark.extensible
 def test_preprocess_handles_extra_columns(tmp_path):
@@ -150,23 +168,23 @@ def test_preprocess_handles_extra_columns(tmp_path):
         "unrelated_column": ["foo", "bar"]
     })
     # Should still preprocess only 'Review' without error
-    corpus = preprocess_dataset(df_extra)
+    corpus, _ = preprocess_dataset(df_extra)
     assert isinstance(corpus, list) and all(isinstance(x, str) for x in corpus), \
         "Preprocess failed when DataFrame has extra columns"
 
 
 # All features are beneficial (no zero-variance)
 
+
 @pytest.mark.features
 def test_preprocessed_has_variance(download_and_preprocess):
     _, pre_df = download_and_preprocess
     # Check that not all rows are identical
-    assert pre_df[0].nunique() > 1, "Review column has zero variance"
-
+    assert pre_df["Review"].nunique() > 1, "Review column has zero variance"
 
 
 @pytest.mark.data
-def test_feature_extraction_pipeline_no_pickle():
+def test_feature_extraction_pipeline():
     base_dir = Path("tests/data/tmp")
     input_path = base_dir / "data_interim.csv"
     bow_path = base_dir / "bow_sentiment_model_test.pkl"
@@ -194,6 +212,7 @@ def test_feature_extraction_pipeline_no_pickle():
     df = pd.read_csv(output_path)
     assert len(df) == 3, f"Expected 3 rows, got {len(df)}"
     assert df.shape[1] > 0, "No features generated"
+
 
 @pytest.mark.data
 def test_preprocess_dataset_empty_input():

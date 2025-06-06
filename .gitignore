@@ -1,8 +1,9 @@
 # Data and models
-#data/
 tests/tmp
 tests/data/tmp
 output/
+model_training/processed_data
+models/
 
 # Mac OS-specific storage files
 .DS_Store
@@ -15,6 +16,7 @@ output/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
+__pycache__
 *.py[cod]
 *$py.class
 
