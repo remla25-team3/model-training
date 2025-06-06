@@ -116,7 +116,7 @@ jobs:
 
       - name: Generate pylint badge
         run: |
-          # SCORE="${{ env.PYLINT_SCORE }}"
+          SCORE="${{ env.PYLINT_SCORE }}"
           # COLOR="brightgreen"
 
           # if (( $(echo "$SCORE < 9.0" | bc -l) )); then COLOR="yellow"; fi
@@ -128,14 +128,14 @@ jobs:
           # <text x='10' y='14' fill='white' font-family='Verdana' font-size='12'>Pylint</text>
           # <text x='75' y='14' fill='white' font-family='Verdana' font-size='12'>$SCORE</text>
           # </svg>" > pylint.svg
-          anybadge --label=Pylint --value=$SCORE --file=pylint.svg \
-          5=red 7=orange 10=green
+
+          anybadge -l "Pylint" -v "$SCORE" -f pylint.svg 5=red 7=orange 10=green
 
 
       - name: Generate ML Test Score badge
         run: |
-          # SCORE="${{ env.ML_SCORE }}"
-          # MAX="${{ env.ML_MAX }}"
+          SCORE="${{ env.ML_SCORE }}"
+          MAX="${{ env.ML_MAX }}"
           # COLOR="brightgreen"
 
           # if (( $(echo "$SCORE < 5.0" | bc -l) )); then COLOR="yellow"; fi
@@ -150,6 +150,9 @@ jobs:
 
           anybadge --label=Pylint --value=$SCORE --file=ml_test_score.svg \
           5=red 7=orange 10=green
+
+          anybadge -l "Test Score" -v "$SCORE" -s "/$MAX" -f pylint.svg 5=red 7=orange 10=green
+
 
       - name: Commit SVG badges to badge-badges branch
         run: |
