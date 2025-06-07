@@ -1,8 +1,8 @@
 """Feature extraction from text corpus"""
 
 from pathlib import Path
-import joblib
 
+import joblib
 from loguru import logger
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer

@@ -4,6 +4,7 @@ test custom code smell detection for missing randomness seed
 
 
 import random
+
 import numpy as np
 import tensorflow as tf
 

@@ -1,27 +1,30 @@
 """
-test_infrastructure.py
+Infrastructure-level tests to ensure the ML pipeline is reproducible, efficient, and complete.
 
-Infrastructure-level tests to ensure:
-- model artifacts exist and are usable
-- prediction and evaluation pipelines are reproducible
-- latency and memory usage are within limits
-- training and evaluation workflows function correctly
+Covers:
+- Model artifacts: file existence, reload consistency, size constraints
+- End-to-end training and evaluation workflows: correctness and output validation
+- Feature extraction: dimensionality bounds and transformation speed
+- Non-functional requirements: inference latency and memory usage
+- Dataset ingestion and preprocessing: full pipeline execution via dataset.main()
 """
 
 
 import json
+from pathlib import Path
 import sys
 import time
 import tracemalloc
-from pathlib import Path
 
 import joblib
 import pandas as pd
 import pytest
+from sklearn.feature_extraction.text import CountVectorizer
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from model_training.config import MODELS_DIR, PROCESSED_DATA_DIR, INTERIM_DATA_DIR
+from model_training.config import INTERIM_DATA_DIR, MODELS_DIR, PROCESSED_DATA_DIR
+from model_training.dataset import main as dataset_main
 from model_training.dataset import preprocess_dataset
 from model_training.modeling.evaluate import main as evaluate_main
 from model_training.modeling.train import train_model
@@ -185,10 +188,16 @@ def test_train(tmp_path):
     ]
     labels = [1, 0, 1, 1, 0]
     dataset_path = tmp_path / "data_interim.csv"
-    pd.DataFrame({"Review": reviews, "Label": labels}).to_csv(dataset_path, index=False, header=False)
+    df = pd.DataFrame({"Review": reviews, "Label": labels})
+    df.to_csv(dataset_path, index=False, header=False)
 
-    # Define file paths
-    features_path = tmp_path / "features.pkl"
+    # Feature extraction (simulate featurize stage)
+    cv = CountVectorizer(max_features=1420)
+    X = cv.fit_transform(df["Review"]).toarray()
+    features_path = tmp_path / "features.csv"
+    pd.DataFrame(X, columns=cv.get_feature_names_out()).to_csv(features_path, index=False)
+
+    # Define output file paths
     model_path = tmp_path / "model.pkl"
     x_test_path = tmp_path / "X_test.csv"
     y_test_path = tmp_path / "y_test.csv"
@@ -201,4 +210,33 @@ def test_train(tmp_path):
         X_test_path=x_test_path,
         y_test_path=y_test_path
     )
+
     assert 0.0 <= acc <= 1.0, "Returned accuracy must be in [0, 1]"
+
+
+@pytest.mark.infrastructure
+def test_dataset_main_pipeline(tmp_path):
+    """
+    Run the dataset main() pipeline end-to-end.
+    Verifies that the raw dataset is downloaded, preprocessed, and stored.
+    """
+    input_path = tmp_path / "raw.tsv"
+    output_path = tmp_path / "processed.csv"
+
+    # Run the full CLI-like pipeline
+    dataset_main(input_path=input_path, output_path=output_path)
+
+    # Check that files were created
+    assert input_path.exists(), f"Raw dataset was not saved to {input_path}"
+    assert output_path.exists(), f"Processed dataset was not written to {output_path}"
+
+    # Validate processed output format
+    df = pd.read_csv(output_path, header=None)
+    assert df.shape[1] == 2, f"Processed dataset should have 2 columns (Review, Label), got {df.shape[1]}"
+    assert df.shape[0] > 0, "Processed dataset is empty"
+
+    # Check basic content structure
+    reviews = df.iloc[:, 0]
+    labels = df.iloc[:, 1]
+    assert all(isinstance(r, str) and r.strip() for r in reviews), "Some reviews are invalid strings"
+    assert labels.isin([0, 1]).all(), "Labels must be binary (0 or 1)"

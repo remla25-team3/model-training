@@ -1,14 +1,19 @@
 """
-test_model.py
+Development-oriented tests to verify model correctness and robustness
+on targeted linguistic and fairness slices.
 
-Contains development-only tests for model behavior:
-- nondeterminism robustness
-- sentiment correctness on common words
-- negation handling
-- typo robustness
-- URL irrelevance
-- named-entity invariance
-- gender fairness checks
+Covered slice types and model capabilities:
+- Sentiment grounding on common words (positive/negative vocabulary)
+- Negation: correct polarity flipping with negated phrases
+- Robustness to typos (character swaps, elongations, omissions)
+- Ignoring irrelevant information (e.g., embedded URLs)
+- Named entity invariance (person/location swaps)
+- Fairness: gendered sentence invariance
+- Order and context understanding in compositional examples
+- Robustness to stochasticity (nondeterminism across repeated calls)
+
+These tests aim to catch silent regressions and encode model expectations
+on real-world error modes, user-generated noise, and ethical consistency.
 """
 
 import numpy as np

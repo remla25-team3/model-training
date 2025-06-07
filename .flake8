@@ -7,6 +7,9 @@
 ignore =
     E402
 
+# Enforce reasonable function complexity (for-if-...)
+max-complexity = 10
+
 ; Apply flake8 to all relevant source files
 exclude =
     .dvc,
