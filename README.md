@@ -298,7 +298,7 @@ They reflect:
 ├── .pylint                 <- pylint linter configuration
 ├── .flake8                 <- flake8 linter configuration
 ├── bandit.yml              <- bandit linter configuration
-
+|
 ├── pytest.ini              <- Pytest configuration
 ├── setup.cfg               <- Tooling configuration
 │
@@ -313,7 +313,7 @@ They reflect:
 │
 ├── release-please-config.json <- Config for GitHub Release automation
 ├── htmlcov                 <- Generated HTML test coverage reports
-
+|
 │
 └── tests                   <- Full test suite, categorized by ML Test Score themes
     ├── conftest.py
