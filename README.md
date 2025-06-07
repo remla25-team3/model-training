@@ -111,13 +111,12 @@ This repository includes a comprehensive test suite located in the `tests/` dire
 
 The test structure is as follows:
 
-- `tests/data/`: Validates **feature and data integrity**, including format checks and input consistency.
-- `tests/development/`: Covers **model development**, including:
-  - Functional tests
-  - Metamorphic testing (e.g., synonym substitution) to assess model robustness.
-  - Data slice testing for subpopulation performance.
-- `tests/infrastructure/`: Checks **ML infrastructure** components for correctness and reproducibility.
-- `tests/monitoring/`: Validates that metrics, logging, and monitoring hooks are correctly configured and functioning.
+- `tests/data/`: Validates **feature and data integrity**, including format checks, input consistency...
+- `tests/development/`: Focuses on **model development** and robustness, metamorphic tests, data slices...
+- `tests/infrastructure/`: Checks **ML infrastructure** components for correctness, reproducibility, latency bounds, inference determinism...
+- `tests/monitoring/`: Ensures **monitoring** and drift detection, such as model staleness and prediction consistency under perturbation.
+
+> More information about the intent and scope of each test is included in the docstring at the beginning of every test file
 
 ### 🧪 Running Tests
 
@@ -127,7 +126,12 @@ To run all tests with coverage analysis, execute the following from the root dir
 pytest
 ```
 
-### 📊 Viewing Coverage
+This automatically:
+- Runs the full test suite
+- Computes coverage
+- Evaluates test adequacy based on the ML Test Score
+
+#### 📊 Viewing Test Coverage
 
 Coverage results will be automatically printed in the terminal. Additionally, an HTML report will be generated in the `htmlcov/` directory. You can open it with:
 
@@ -136,6 +140,15 @@ xdg-open htmlcov/index.html  # For Linux
 # or
 open htmlcov/index.html      # For macOS
 ```
+
+#### 🧠 About Test Adequacy
+
+The ML Test Score evaluates how comprehensively our tests cover critical ML production concerns, based on Google's [ML Test score](https://research.google/pubs/the-ml-test-score-a-rubric-for-ml-production-readiness-and-technical-debt-reduction/).
+- Each test category (data, model, infrastructure, monitoring) defines a set of relevant keywords (e.g., "synonym", "robustness", "latency")
+- The adequacy score is based on the presence of these keywords in test files
+- Each category contributes to a weighted global score out of 100
+
+The score breakdown is printed in the terminal after tests complete, and saved to metrics/ml_test_score.json.
 
 ---
 
@@ -154,7 +167,7 @@ We use a custom **pylint** configuration that includes, among other personalizat
 
 To run it:
 ```bash
-pylint model_training tests
+pylint model_training tests scripts
 ```
 
 To test if our custom plugin actually detects the code smell, we implemented a simple test in which we use **random**, **numpy.random** and **tensorflow.random** without specifying the **random seed**.
@@ -176,7 +189,7 @@ Used for fast style and formatting checks, ensuring consistent code style and re
 
 To run it:
 ```bash
-flake8 model_training tests 
+flake8 model_training tests scripts
 ```
 
 Expected output:
@@ -184,13 +197,13 @@ Expected output:
 0
 ```
 
-#### 🔍 Bandit
+### 🔍 Bandit
 
 Bandit scans for common Python security issues, ensuring safe and robust code practices.
 
 To run it:
 ```bash
- bandit -r model_training tests --config bandit.yml
+ bandit -r model_training tests scripts --config bandit.yml
  ```
 
 Expected output:
@@ -226,7 +239,7 @@ Files skipped (0):
 
 ### 🔁 Continuous Integration
 
-All tests and linters (**pylint**, **flake8**,**bandit**) are integrated into the GitHub Actions workflow. Test failures or critical linter violations will fail the CI build. Test adequacy and coverage metrics are tracked via **coverage.py** and reported directly in the CI logs.
+All tests and linters (**pylint**, **flake8**,**bandit**) are integrated into the GitHub Actions workflow. Test failures will fail the CI build. Test adequacy and coverage metrics are tracked via **coverage.py** and reported directly in the CI logs.
 
 
 ## ✅ Project Quality Metrics
@@ -269,43 +282,51 @@ They reflect:
 │   │   ├── train.py        <- Training routine and model saving
 │   │   ├── evaluate.py     <- Evaluation metrics and pipeline
 │   │   └── predict.py      <- Inference logic for predictions
-│   └── plots.py            <- Optional visualization utilities
 │
-├── output                  <- Model evaluation output (e.g., metrics.json)
+├── output                  <- Model evaluation output (e.g., DVC metrics.json)
 │
 ├── pylint_custom           <- Custom Pylint checkers for ML-specific code smells
 │   ├── __init__.py
-│   ├── ml_pylint.py        <- Custom checker implementation
+│   ├── ml_pylint.py        <- Custom Code Smell checker implementation (Uncontrolled Randomness)
 │   └── tests
 │       ├── __init__.py
 │       └── test_randomness.py  <- Tests for the randomness checker
 │
-├── pyproject.toml          <- Project metadata and tool configuration
-├── pytest.ini              <- Pytest configuration
 ├── requirements.txt        <- Python dependencies
-├── setup.cfg               <- Linter/tooling configuration
+├── pyproject.toml          <- Project metadata and tool configuration
+|
+├── .pylint                 <- pylint linter configuration
+├── .flake8                 <- flake8 linter configuration
+├── bandit.yml              <- bandit linter configuration
+
+├── pytest.ini              <- Pytest configuration
+├── setup.cfg               <- Tooling configuration
 │
 ├── scripts
-│   └── update_readme.py    <- Utility script to programmatically update the README
+│   └── ml_test_score.py    <- Utility script to calculate test adequacy based on Google's ML Test Score
 │
+├── metrics
+│   └── ml_test_score.json  <- Test adequacy score, based on scripts/ml_test_score calculation
+|
 ├── references
 │   └── README.md           <- Any reference materials, citations, or external notes
 │
 ├── release-please-config.json <- Config for GitHub Release automation
+├── htmlcov                 <- Generated HTML test coverage reports
+
 │
-├── tests                   <- Full test suite, categorized by ML Test Score themes
-│   ├── conftest.py
-│   ├── data
-│   │   └── test_data.py
-│   ├── development
-│   │   ├── test_data_slices.py
-│   │   ├── test_metamorphic.py
-│   │   └── test_model.py
-│   ├── infrastructure
-│   │   └── test_infrastructure.py
-│   ├── monitoring
-│   │   └── test_monitoring.py
-│   └── htmlcov             <- Generated HTML test coverage reports
+└── tests                   <- Full test suite, categorized by ML Test Score themes
+    ├── conftest.py
+    ├── data
+    │   └── test_data.py
+    ├── development
+    │   ├── test_metamorphic.py
+    │   └── test_model.py
+    ├── infrastructure
+    │   └── test_infrastructure.py
+    └── monitoring
+        └── test_monitoring.py
+
 ```
 
 --------

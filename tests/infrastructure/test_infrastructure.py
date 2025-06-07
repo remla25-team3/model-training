@@ -24,7 +24,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from model_training.config import INTERIM_DATA_DIR, MODELS_DIR, PROCESSED_DATA_DIR
-from model_training.dataset import preprocess_dataset, main as dataset_main
+from model_training.dataset import main as dataset_main
+from model_training.dataset import preprocess_dataset
 from model_training.modeling.evaluate import main as evaluate_main
 from model_training.modeling.train import train_model
 

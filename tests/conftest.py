@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import sys
+import subprocess
 
 import pandas as pd
 
@@ -41,3 +42,16 @@ def trained_model():
         features_path=str(FEATURES_PATH)
     )
     return trained_model_test
+
+
+def pytest_sessionfinish():
+    """Hook to run after all tests have finished."""
+
+    script_path = Path(__file__).parent.parent / "scripts" / "ml_test_score.py"
+    result = subprocess.run(
+        [sys.executable, str(script_path)],
+        capture_output=True,
+        text=True
+    )
+
+    print(result.stdout)

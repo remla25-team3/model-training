@@ -11,7 +11,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 import typer
 
-
 app = typer.Typer()
 SEED = 42  # Random seed for reproducibility
 
