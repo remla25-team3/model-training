@@ -1,0 +1,109 @@
+{
+  "overall_score": 82.2,
+  "categories": {
+    "data": {
+      "score": 87.5,
+      "found_keywords": [
+        "class",
+        "columns",
+        "data",
+        "dataset",
+        "duplicate",
+        "empty",
+        "feature",
+        "features",
+        "invalid",
+        "length",
+        "nulls",
+        "privacy",
+        "schema",
+        "variance"
+      ],
+      "missed_keywords": [
+        "distributions",
+        "relationship"
+      ],
+      "description": "Feature and Data Integrity",
+      "weight": 30,
+      "files": [
+        "tests/data/test_data.py"
+      ]
+    },
+    "model": {
+      "score": 95.5,
+      "found_keywords": [
+        "bias",
+        "common",
+        "fairness",
+        "gendered",
+        "generalization",
+        "irrelevance",
+        "long",
+        "model",
+        "monotonicity",
+        "named",
+        "negation",
+        "nondeterminism",
+        "permutation",
+        "punctuation",
+        "repair",
+        "robustness",
+        "short",
+        "slice",
+        "synonym",
+        "typos",
+        "whitespace"
+      ],
+      "missed_keywords": [
+        "hyperparameter"
+      ],
+      "description": "Model Development",
+      "weight": 35,
+      "files": [
+        "tests/development/test_model.py",
+        "tests/development/test_metamorphic.py"
+      ]
+    },
+    "infrastructure": {
+      "score": 50.0,
+      "found_keywords": [
+        "artifacts",
+        "consistency",
+        "inference",
+        "latency",
+        "memory",
+        "pipeline"
+      ],
+      "missed_keywords": [
+        "extractionlimit",
+        "previous",
+        "quality",
+        "serving",
+        "staleness"
+      ],
+      "description": "ML Infrastructure",
+      "weight": 20,
+      "files": [
+        "tests/infrastructure/test_infrastructure.py"
+      ]
+    },
+    "monitor": {
+      "score": 83.3,
+      "found_keywords": [
+        "inference",
+        "latency",
+        "monitor",
+        "perturbation",
+        "staleness"
+      ],
+      "missed_keywords": [
+        "invariance"
+      ],
+      "description": "Monitoring",
+      "weight": 15,
+      "files": [
+        "tests/monitoring/test_monitoring.py"
+      ]
+    }
+  }
+}

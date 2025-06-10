@@ -41,7 +41,8 @@ disable=
     too-many-branches,
     too-many-statements,
     invalid-name,  # Use custom naming policy instead
-    wrong-import-position  # Often irrelevant in notebooks or scripts
+    wrong-import-position,  # Often irrelevant in notebooks or scripts
+    R6101   #Consider using namedtuple or dataclass for dictionary values
 
 [BASIC]
 # Accept common variable names in ML and plotting contexts

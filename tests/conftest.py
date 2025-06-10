@@ -12,6 +12,7 @@ from modeling.predict import SentimentPredictor
 import pytest
 
 from model_training.config import EXTERNAL_DATA_DIR, MODELS_DIR
+from scripts import ml_test_score
 
 # Paths to data/model artifacts tracked by DVC
 DATA_PATH = EXTERNAL_DATA_DIR / "a1_RestaurantReviews_HistoricDump.tsv"
@@ -41,3 +42,13 @@ def trained_model():
         features_path=str(FEATURES_PATH)
     )
     return trained_model_test
+
+
+def pytest_sessionfinish():
+    """Hook to run after all tests have finished."""
+    sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
+
+    try:
+        ml_test_score.main()
+    except (ImportError, AttributeError, RuntimeError) as e:
+        print(f"[ML TEST SCORE ERROR] {e}")
