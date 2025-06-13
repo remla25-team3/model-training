@@ -1,12 +1,13 @@
 # model-training
 
-<a target="_blank" href="https://cookiecutter-data-science.drivendata.org/">
-    <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
-</a>
-
-![Coverage](https://github.com/remla25-team3/model-training/raw/badge-badges/coverage.svg)
-![Pylint](https://github.com/remla25-team3/model-training/raw/badge-badges/pylint.svg)
-![ML Test Score](https://github.com/remla25-team3/model-training/raw/badge-badges/ml_test_score.svg)
+<p>
+    <a target="_blank" href="https://cookiecutter-data-science.drivendata.org/">
+        <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
+    </a>
+    <img src="https://github.com/remla25-team3/model-training/raw/badge-badges/coverage.svg" />
+    <img src="https://github.com/remla25-team3/model-training/raw/badge-badges/pylint.svg" />
+    <img src="https://github.com/remla25-team3/model-training/raw/badge-badges/ml_test_score.svg" />
+</p>
 
 This repository contains the **machine learning training pipeline** according to instructions in the [Restaurant Sentiment Analysis](https://github.com/proksch/restaurant-sentiment) project.
 
