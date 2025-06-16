@@ -21,17 +21,20 @@ jobs:
           private-key: ${{ secrets.TEAM_APP_KEY }}
 
       - uses: googleapis/release-please-action@v4
+        id: release
         with:
           token: ${{ steps.app-token.outputs.token }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
       
       - name: Upload model to Github Release
+        if: ${{ steps.release.outputs.release_created  == 'true' }}
         uses: softprops/action-gh-release@v1
         with:
           files: models/sentiment_model.pkl
           name: sentiment_model.pkl
           body: |
-            This is the sentiment model trained on the latest data.
+            Sentiment model for sentiment analysis of tweets.
+          tag_name: ${{ steps.release.outputs.tag_name }}
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
