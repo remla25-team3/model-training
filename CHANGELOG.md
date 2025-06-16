@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/remla25-team3/model-training/compare/v0.1.0...v0.2.0) (2025-06-16)
+
+
+### Features
+
+* automated model release test ([45c0977](https://github.com/remla25-team3/model-training/commit/45c09775fcc047da238a63f1ed9f1f882490ccb7))
+
 ## 0.1.0 (2025-06-13)
 
 
