@@ -26,15 +26,22 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
-      
-      - name: Upload model to Github Release
-        if: ${{ steps.release.outputs.release_created  == 'true' }}
-        uses: softprops/action-gh-release@v1
+
+      - name: Download model from DVC
+        uses: actions/download-artifact@v4
         with:
-          files: models/sentiment_model.pkl
-          name: sentiment_model.pkl
-          body: |
-            Sentiment model for analysis of tweets.
-          tag_name: ${{ steps.release.outputs.tag_name }}
+          name: dvc-model
+          path: models
+      
+
+      - name: Upload model to Release
+        if: ${{ steps.release.outputs.release_created  == 'true' }}
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.release.outputs.upload_url }}
+          asset_path: models/sentiment_model.pkl 
+          asset_name: sentiment_model.pkl
+          asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
