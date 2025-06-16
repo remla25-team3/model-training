@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1](https://github.com/remla25-team3/model-training/compare/v0.2.0...v0.2.1) (2025-06-16)
+
+
+### Bug Fixes
+
+* small commit to get release-please pr ([dda2620](https://github.com/remla25-team3/model-training/commit/dda26206c38b4b71a8e9eeb3badea8cd2ecb448a))
+* small commit to get release-please pr ([a6339d9](https://github.com/remla25-team3/model-training/commit/a6339d9b8e04d6ffeb702d034c8d7d5c913830dd))
+
 ## [0.2.0](https://github.com/remla25-team3/model-training/compare/v0.1.0...v0.2.0) (2025-06-16)
 
 
