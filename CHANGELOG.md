@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.2](https://github.com/remla25-team3/model-training/compare/v0.2.1...v0.2.2) (2025-06-16)
+
+
+### Bug Fixes
+
+* upload assets to release instead of making new release for it ([6410069](https://github.com/remla25-team3/model-training/commit/6410069a4e0ecc4f9ff7ba6fa3906ca2a8e92392))
+* upload assets to release instead of making new release for it ([6220bda](https://github.com/remla25-team3/model-training/commit/6220bda4ff797848873880a72d90e982b6246128))
+
 ## [0.2.1](https://github.com/remla25-team3/model-training/compare/v0.2.0...v0.2.1) (2025-06-16)
 
 
