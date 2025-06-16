@@ -25,3 +25,13 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+      
+      - name: Upload model to Github Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: models/sentiment_model.pkl
+          name: sentiment_model.pkl
+          body: |
+            This is the sentiment model trained on the latest data.
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

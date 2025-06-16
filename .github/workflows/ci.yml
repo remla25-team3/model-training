@@ -56,6 +56,12 @@ jobs:
           echo '${{ secrets.SERVICE_KEY }}' > service_key.json
           dvc pull --force
           dvc repro
+        
+      - name: Save DVC model for later use (should be done earlier in pipeline and then referenced here)
+        uses: actions/upload-artifact@v4
+        with:
+          name: dvc-model
+          path: models/sentiment_model.pkl
 
       - name: Run pytest with coverage
         id: pytest
