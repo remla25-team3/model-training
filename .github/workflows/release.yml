@@ -34,7 +34,7 @@ jobs:
           files: models/sentiment_model.pkl
           name: sentiment_model.pkl
           body: |
-            Sentiment model for sentiment analysis of tweets.
+            Sentiment model for analysis of tweets.
           tag_name: ${{ steps.release.outputs.tag_name }}
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
