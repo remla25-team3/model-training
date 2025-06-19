@@ -28,10 +28,10 @@ jobs:
           manifest-file: .release-please-manifest.json
 
       - name: Download model from DVC
-        if: steps.release.outputs.release_created
         run: |
           echo '${{ secrets.SERVICE_KEY }}' > service_key.json
           dvc pull --force
+          ls models/
           
       - name: Upload model to Release
         if: steps.release.outputs.release_created
