@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/remla25-team3/model-training/compare/v0.2.2...v0.2.3) (2025-06-19)
+
+
+### Bug Fixes
+
+* ensure model directory is listed after DVC download ([46824aa](https://github.com/remla25-team3/model-training/commit/46824aa4dddecb885727236e4b15645b5f0537fc))
+
 ## [0.2.2](https://github.com/remla25-team3/model-training/compare/v0.2.1...v0.2.2) (2025-06-16)
 
 
