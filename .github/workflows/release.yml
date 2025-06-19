@@ -28,14 +28,13 @@ jobs:
           manifest-file: .release-please-manifest.json
 
       - name: Download model from DVC
-        uses: actions/download-artifact@v4
-        with:
-          name: dvc-model
-          path: models
-      
-
+        if: steps.release.outputs.release_created
+        run: |
+          echo '${{ secrets.SERVICE_KEY }}' > service_key.json
+          dvc pull --force
+          
       - name: Upload model to Release
-        if: ${{ steps.release.outputs.release_created  == 'true' }}
+        if: steps.release.outputs.release_created
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.release.outputs.upload_url }}
